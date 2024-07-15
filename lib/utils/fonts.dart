@@ -1,0 +1,1 @@
+const String kInter = "Noto Sans";
