@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wechat_clone/pages/home_page.dart';
+import 'package:wechat_clone/pages/splash_page.dart';
+import 'package:wechat_clone/utils/fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,8 +12,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        fontFamily: kNotoSans,
+      ),
+      home: const SplashPage(),
     );
   }
 }

@@ -22,3 +22,16 @@ const kTextRegular3X = 20.0;
 const kTextHeading1X = 24.0;
 const kTextHeading2X = 28.0;
 const kTextBig = 32.0;
+
+/// App Specific
+
+const kText18 = 18.0;
+const kText30 = 30.0;
+
+const kMargin5 = 5.0;
+const kMargin45 = 45.0;
+const kMargin50 = 50.0;
+const kMargin15 = 15.0;
+
+
+const kBackArrowIconSize = 30.0;

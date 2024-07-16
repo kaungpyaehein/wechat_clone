@@ -35,6 +35,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
+  flutter_svg: ^2.0.10+1
+  pinput: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -59,8 +61,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/images/
+    - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -75,9 +78,28 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   # fonts.dart:
-  #   - family: Schyler
-  #     fonts.dart:
-  #       - asset: fonts.dart/Schyler-Regular.ttf
+
+  fonts:
+    - family: NotoSans
+      fonts:
+        - asset: fonts/NotoSans-Regular.ttf
+        - asset: fonts/NotoSans-Medium.ttf
+          weight: 500
+        - asset: fonts/NotoSans-Bold.ttf
+          weight: 600
+        - asset: fonts/NotoSans-ExtraBold.ttf
+          weight: 800
+    - family: YorkieDEMO
+      fonts:
+        - asset: fonts/YorkieDEMO-Regular.otf
+        - asset: fonts/YorkieDEMO-Medium.otf
+          weight: 500
+        - asset: fonts/YorkieDEMO-Bold.otf
+          weight: 600
+        - asset: fonts/YorkieDEMO-ExtraBold.otf
+          weight: 800
+
+
   #       - asset: fonts.dart/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

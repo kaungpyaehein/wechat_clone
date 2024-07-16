@@ -1,1 +1,3 @@
-const String kInter = "Noto Sans";
+const String kNotoSans = "NotoSans";
+
+const String kYorkieDemo = "YorkieDEMO";
