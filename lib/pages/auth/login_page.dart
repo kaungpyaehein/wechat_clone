@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wechat_clone/pages/home_page.dart';
+import 'package:wechat_clone/pages/home/home_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
@@ -134,20 +134,22 @@ class PrimaryButtonWidget extends StatelessWidget {
     required this.onTap,
     required this.label,
     this.padding,
+    this.size,
   });
 
   final void Function() onTap;
   final String label;
   final EdgeInsets? padding;
+  final Size? size;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      
+
       style: ElevatedButton.styleFrom(
-        maximumSize: const Size(150, kMargin50),
+        minimumSize: Size(0, 0),
+        maximumSize: size ?? const Size(150, kMargin50),
         padding: padding ??
-            
             const EdgeInsets.symmetric(
                 horizontal: kMargin45, vertical: kMargin15),
         backgroundColor: kPrimaryColor,

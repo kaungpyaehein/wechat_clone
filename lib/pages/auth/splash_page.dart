@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wechat_clone/pages/login_page.dart';
-import 'package:wechat_clone/pages/sign_up_page_one.dart';
+import 'package:wechat_clone/pages/auth/login_page.dart';
+import 'package:wechat_clone/pages/auth/sign_up_page_one.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';

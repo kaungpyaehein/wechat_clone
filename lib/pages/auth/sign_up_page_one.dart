@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
-import 'package:wechat_clone/pages/login_page.dart';
+import 'package:wechat_clone/pages/auth/login_page.dart';
+import 'package:wechat_clone/pages/auth/sign_up_page_two.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
@@ -118,7 +119,9 @@ class SignupPageOne extends StatelessWidget {
                 height: kMarginXLarge,
               ),
 
-              Center(child: PrimaryButtonWidget(onTap: () {}, label: "Verify"))
+              Center(child: PrimaryButtonWidget(onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPageTwo(),));
+              }, label: "Verify"))
             ],
           ),
         ),
@@ -160,7 +163,9 @@ class CustomPinPutWidget extends StatelessWidget {
         width: kMarginMedium4,
       ),
       defaultPinTheme: defaultPinTheme,
-      validator: (s) {},
+      validator: (s) {
+        return null;
+      },
       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
       showCursor: true,
       onCompleted: (pin) => print(pin),

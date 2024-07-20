@@ -17,11 +17,12 @@ class SvgImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SvgPicture.asset(
+      color: color,
       imagePath,
       height: height,
       width: width,
       fit: BoxFit.cover,
-      color: color ?? kPrimaryColor,
+
     );
   }
 }
