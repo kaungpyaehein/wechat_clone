@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "73566393303",
+    "project_id": "socialappproject-8090c",
+    "storage_bucket": "socialappproject-8090c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:73566393303:android:3f019a1f7f99d30d9cb192",
+        "android_client_info": {
+          "package_name": "com.padc.wechat_clone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMrnZKuutthwqztrqxh-Q4Njkg_k1v0QY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

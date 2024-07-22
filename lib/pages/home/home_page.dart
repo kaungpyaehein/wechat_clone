@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:wechat_clone/pages/home/chat_page.dart';
 import 'package:wechat_clone/pages/home/contacts_page.dart';
@@ -28,140 +28,136 @@ class _HomePageState extends State<HomePage> {
   ];
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: pages[selectedIndex],
-      bottomNavigationBar: Container(
-        height: kMarginXXLarge2,
-        decoration: const BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x3F454545),
-              blurRadius: 20,
-              offset: Offset(0, -4),
-              spreadRadius: 0,
-            )
-          ],
-        ),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          onTap: (index) {
-            setState(() {
-              selectedIndex = index;
-            });
-          },
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          currentIndex: selectedIndex,
-          selectedItemColor: kPrimaryColor,
-          unselectedItemColor: kGreyTextColor,
-          backgroundColor: Colors.white,
-          selectedLabelStyle: const TextStyle(
-              color: kPrimaryColor,
-              fontFamily: kYorkieDemo,
-              fontWeight: FontWeight.w700,
-              fontSize: kTextSmall),
-          unselectedLabelStyle: const TextStyle(
-              color: kGreyTextColor,
-              fontFamily: kYorkieDemo,
-              fontWeight: FontWeight.w700,
-              fontSize: kTextSmall),
-          items: [
-            BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kMomentIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(
+          height: 60,
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            onTap: (index) {
+              setState(() {
+                selectedIndex = index;
+              });
+            },
+            selectedFontSize: 0.0,
+            unselectedFontSize: 0.0,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            currentIndex: selectedIndex,
+            selectedItemColor: kPrimaryColor,
+            unselectedItemColor: kGreyTextColor,
+            backgroundColor: Colors.white,
+            selectedLabelStyle: const TextStyle(
+                color: kPrimaryColor,
+                fontFamily: kYorkieDemo,
+                fontWeight: FontWeight.w700,
+                fontSize: kTextSmall),
+            unselectedLabelStyle: const TextStyle(
+                color: kGreyTextColor,
+                fontFamily: kYorkieDemo,
+                fontWeight: FontWeight.w700,
+                fontSize: kTextSmall),
+            elevation: 0,
+            items: [
+              BottomNavigationBarItem(
+                  icon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kMomentIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                    ),
                   ),
-                ),
-                activeIcon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kMomentIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
-                    color: kPrimaryColor,
+                  activeIcon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kMomentIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                      color: kPrimaryColor,
+                    ),
                   ),
-                ),
-                label: "Moment"),
-            BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kChatIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
+                  label: "Moment"),
+              BottomNavigationBarItem(
+                  icon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kChatIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                    ),
                   ),
-                ),
-                activeIcon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kChatIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
-                    color: kPrimaryColor,
+                  activeIcon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kChatIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                      color: kPrimaryColor,
+                    ),
                   ),
-                ),
-                label: "Chat"),
-            BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kContactsIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
+                  label: "Chat"),
+              BottomNavigationBarItem(
+                  icon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kContactsIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                    ),
                   ),
-                ),
-                activeIcon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kContactsIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
-                    color: kPrimaryColor,
+                  activeIcon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kContactsIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                      color: kPrimaryColor,
+                    ),
                   ),
-                ),
-                label: "Contacts"),
-            BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kProfileIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
+                  label: "Contacts"),
+              BottomNavigationBarItem(
+                  icon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kProfileIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                    ),
                   ),
-                ),
-                activeIcon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kProfileIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
-                    color: kPrimaryColor,
+                  activeIcon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kProfileIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                      color: kPrimaryColor,
+                    ),
                   ),
-                ),
-                label: "Me"),
-            BottomNavigationBarItem(
-                icon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kMenuIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
+                  label: "Me"),
+              BottomNavigationBarItem(
+                  icon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kMenuIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                    ),
                   ),
-                ),
-                activeIcon: Padding(
-                  padding: const EdgeInsets.only(bottom: kMarginSmall),
-                  child: Image.asset(
-                    kMenuIcon,
-                    height: kBottomNavIconSize,
-                    width: kBottomNavIconSize,
-                    color: kPrimaryColor,
+                  activeIcon: Padding(
+                    padding: const EdgeInsets.only(bottom: kMarginSmall),
+                    child: Image.asset(
+                      kMenuIcon,
+                      height: kBottomNavIconSize,
+                      width: kBottomNavIconSize,
+                      color: kPrimaryColor,
+                    ),
                   ),
-                ),
-                label: "Settings"),
-          ],
+                  label: "Settings"),
+            ],
+          ),
         ),
       ),
     );

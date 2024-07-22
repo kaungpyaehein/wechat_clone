@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
+import 'package:provider/provider.dart';
+import 'package:wechat_clone/blocs/regiser_bloc.dart';
 import 'package:wechat_clone/pages/auth/login_page.dart';
 import 'package:wechat_clone/pages/auth/sign_up_page_two.dart';
 import 'package:wechat_clone/utils/colors.dart';
@@ -12,120 +14,191 @@ class SignupPageOne extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: const CustomBackButton(),
+    return ChangeNotifierProvider(
+      create: (context) => RegisterBlocOne(),
+      child: Selector<RegisterBlocOne, String>(
+        selector: (context, bloc) => bloc.otp,
+        builder: (context, otp, child) {
+          return Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              leading: const CustomBackButton(),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: kMarginXLarge2),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: kMarginLarge,
+                    ),
+
+                    /// TITLE TEXT VIEW
+                    const Text(
+                      "Hi !",
+                      style: TextStyle(
+                        color: kPrimaryColor,
+                        fontFamily: kYorkieDemo,
+                        fontSize: kText30,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: kMargin5,
+                    ),
+                    const Text(
+                      "Create a new account",
+                      style: TextStyle(
+                        color: kPrimaryColor,
+                        fontSize: kTextRegular2X,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: kMarginLarge,
+                    ),
+
+                    /// IMAGE VIEW
+                    Image.asset(
+                      kSignUpImage,
+                    ),
+
+                    const SizedBox(
+                      height: kMarginLarge,
+                    ),
+
+                    /// PHONE INPUT VIEW
+                    PhoneNumberInputView(),
+
+                    const SizedBox(
+                      height: kMarginXXLarge,
+                    ),
+
+                    /// PIN PUT VIEW
+                    Center(
+                      child: CustomPinPutWidget(
+                        onChanged: (otp) {
+                          final bloc = context.read<RegisterBlocOne>();
+                          bloc.onChangeOTP(otp);
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: kMarginXLarge,
+                    ),
+
+                    Center(
+                      child: RichText(
+                          text: const TextSpan(children: [
+                        TextSpan(
+                            text: "Dont receive the OTP?",
+                            style: TextStyle(
+                                color: kGreyTextColor,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: kNotoSans)),
+                        TextSpan(
+                            text: " Resend Code",
+                            style: TextStyle(
+                                color: kDefaultTextColor,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: kNotoSans))
+                      ])),
+                    ),
+
+                    const SizedBox(
+                      height: kMarginXLarge,
+                    ),
+
+                    /// VERIFY BUTTON VIEW
+                    const Center(child: VerifyButtonView())
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: kMarginXLarge2),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: kMarginLarge,
-              ),
+    );
+  }
+}
 
-              /// TITLE TEXT VIEW
-              const Text(
-                "Hi !",
-                style: TextStyle(
-                  color: kPrimaryColor,
-                  fontFamily: kYorkieDemo,
-                  fontSize: kText30,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(
-                height: kMargin5,
-              ),
-              const Text(
-                "Create a new account",
-                style: TextStyle(
-                  color: kPrimaryColor,
-                  fontSize: kTextRegular2X,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+class PhoneNumberInputView extends StatelessWidget {
+  const PhoneNumberInputView({
+    super.key,
+  });
 
-              const SizedBox(
-                height: kMarginLarge,
-              ),
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: CustomTextFieldWidget(
+              inputType: TextInputType.phone,
+              labelText: "Enter Your Phone Number",
+              onChanged: (text) {
+                final bloc = context.read<RegisterBlocOne>();
 
-              /// IMAGE VIEW
-              Image.asset(
-                kSignUpImage,
-              ),
-
-              const SizedBox(
-                height: kMarginLarge,
-              ),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: CustomTextFieldWidget(
-                        labelText: "Enter Your Phone Number",
-                        onChanged: (text) {}),
-                  ),
-                  const SizedBox(
-                    width: kMarginMedium4,
-                  ),
-                  SizedBox(
-                    width: 100,
-                    height: kMargin45,
-                    child: PrimaryButtonWidget(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: kMarginMedium2, vertical: kMarginMedium2),
-                        onTap: () {},
-                        label: "Get OTP"),
-                  ),
-                ],
-              ),
-
-              const SizedBox(
-                height: kMarginXXLarge,
-              ),
-
-              const Center(
-                child: CustomPinPutWidget(),
-              ),
-
-              const SizedBox(
-                height: kMarginXLarge,
-              ),
-
-              Center(
-                child: RichText(
-                    text: const TextSpan(children: [
-                  TextSpan(
-                      text: "Dont receive the OTP?",
-                      style: TextStyle(
-                          color: kGreyTextColor,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: kNotoSans)),
-                  TextSpan(
-                      text: " Resend Code",
-                      style: TextStyle(
-                          color: kDefaultTextColor,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: kNotoSans))
-                ])),
-              ),
-
-              const SizedBox(
-                height: kMarginXLarge,
-              ),
-
-              Center(child: PrimaryButtonWidget(onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPageTwo(),));
-              }, label: "Verify"))
-            ],
-          ),
+                bloc.onChangePhoneNumber(text);
+              }),
         ),
-      ),
+        const SizedBox(
+          width: kMarginMedium4,
+        ),
+        SizedBox(
+          width: 100,
+          height: kMargin45,
+          child: PrimaryButtonWidget(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: kMarginMedium2, vertical: kMarginMedium2),
+              onTap: () {},
+              label: "Get OTP"),
+        ),
+      ],
+    );
+  }
+}
+
+class VerifyButtonView extends StatelessWidget {
+  const VerifyButtonView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<RegisterBlocOne, String>(
+      selector: (context, bloc) => bloc.phone,
+      builder: (context, phone, _) {
+        return PrimaryButtonWidget(
+            onTap: () {
+              final bloc = context.read<RegisterBlocOne>();
+              if (bloc.checkOTP()) {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SignUpPageTwo(
+                        phoneNumber: phone,
+                      ),
+                    ));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Please check OTP and phone number.",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w500),
+                    ),
+                    backgroundColor: kRedSelectedColor,
+                  ),
+                );
+              }
+            },
+            label: "Verify");
+      },
     );
   }
 }
@@ -133,7 +206,10 @@ class SignupPageOne extends StatelessWidget {
 class CustomPinPutWidget extends StatelessWidget {
   const CustomPinPutWidget({
     super.key,
+    required this.onChanged,
   });
+
+  final void Function(String) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +235,7 @@ class CustomPinPutWidget extends StatelessWidget {
     );
 
     return Pinput(
+      onChanged: onChanged,
       separatorBuilder: (index) => const SizedBox(
         width: kMarginMedium4,
       ),

@@ -183,18 +183,20 @@ class CustomTextFieldWidget extends StatelessWidget {
     super.key,
     required this.labelText,
     this.isPasswordField,
-    required this.onChanged,
+    required this.onChanged, this.inputType,
   });
 
   final String labelText;
   final bool? isPasswordField;
   final void Function(String) onChanged;
+  final TextInputType? inputType;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: TextField(
         onChanged: onChanged,
+        keyboardType: inputType,
         obscureText: isPasswordField ?? false,
         style: const TextStyle(
             color: kDefaultTextColor,
