@@ -6,6 +6,7 @@ import 'package:wechat_clone/pages/auth/login_page.dart';
 import 'package:wechat_clone/pages/auth/sign_up_page_two.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
+import 'package:wechat_clone/utils/extensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
 import 'package:wechat_clone/utils/images.dart';
 
@@ -185,16 +186,8 @@ class VerifyButtonView extends StatelessWidget {
                       ),
                     ));
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      "Please check OTP and phone number.",
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w500),
-                    ),
-                    backgroundColor: kRedSelectedColor,
-                  ),
-                );
+                showErrorSnackBarWithMessage(
+                    context, "Please check OTP and phone number.");
               }
             },
             label: "Verify");

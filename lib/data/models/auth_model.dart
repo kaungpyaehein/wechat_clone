@@ -12,6 +12,4 @@ abstract class AuthenticationModel {
   Future<void> logOut();
 
   Future<String> getOtp();
-
-
 }

@@ -39,8 +39,7 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
 
   @override
   Future login(String email, String password) {
-    // TODO: implement login
-    throw UnimplementedError();
+    return auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> addNewUser(UserVO newUser) {
@@ -76,5 +75,10 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
   @override
   bool isLoggedIn() {
     return auth.currentUser != null;
+  }
+
+  @override
+  Future logOut() {
+    return auth.signOut();
   }
 }

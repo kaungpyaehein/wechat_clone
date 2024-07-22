@@ -6,4 +6,5 @@ abstract class WechatDataAgent {
   Future registerNewUser(UserVO newUser);
   Future login(String email, String password);
   bool isLoggedIn();
+  Future logOut();
 }

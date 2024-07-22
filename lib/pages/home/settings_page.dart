@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:wechat_clone/pages/home/moment_page.dart';
-import 'package:wechat_clone/utils/images.dart';
+import 'package:wechat_clone/data/models/auth_model.dart';
+import 'package:wechat_clone/data/models/auth_model_impl.dart';
+import 'package:wechat_clone/pages/auth/login_page.dart';
+import 'package:wechat_clone/pages/auth/splash_page.dart';
+import 'package:wechat_clone/utils/colors.dart';
+import 'package:wechat_clone/utils/dimensions.dart';
+import 'package:wechat_clone/utils/fonts.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -8,11 +13,36 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: buildDefaultAppBar(
-      context: context,
-      title: "Settings",
-      iconPath: kLogOutIcon,
-      onTap: () {},
+        appBar: AppBar(
+      elevation: 2,
+      centerTitle: false,
+      automaticallyImplyLeading: false,
+      title: const Text(
+        "Settings",
+        style: TextStyle(
+            color: kPrimaryColor,
+            fontSize: 34,
+            fontWeight: FontWeight.w600,
+            fontFamily: kYorkieDemo),
+      ),
+      actions: [
+        PrimaryButtonWidget(
+            padding: const EdgeInsets.all(kMarginMedium),
+            size: const Size(kMarginXXLarge3, kMarginXLarge2),
+            onTap: ()  {
+              AuthenticationModel authModel = AuthModelImpl();
+               authModel.logOut().then((_) => Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SplashPage(),
+                  ),
+                  (route) => false));
+            },
+            label: "Log Out"),
+        const SizedBox(
+          width: kMarginMedium3,
+        ),
+      ],
     ));
   }
 }

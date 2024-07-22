@@ -19,14 +19,12 @@ class AuthModelImpl extends AuthenticationModel {
 
   @override
   Future<void> logOut() {
-    // TODO: implement logOut
-    throw UnimplementedError();
+    return wechatDataAgent.logOut();
   }
 
   @override
   Future<void> login(String email, String password) {
-    // TODO: implement login
-    throw UnimplementedError();
+    return wechatDataAgent.login(email, password);
   }
 
   @override

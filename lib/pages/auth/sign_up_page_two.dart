@@ -139,7 +139,7 @@ class SignUpPageTwo extends StatelessWidget {
                                       builder: (context) => const HomePage(),
                                     ),
                                     (route) => false))
-                                .onError((error, _) => showSnackBarWithMessage(
+                                .catchError((error, _) => showSnackBarWithMessage(
                                     context, error.toString()));
                           },
                           label: "Sign Up"))
