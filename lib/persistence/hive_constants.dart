@@ -1,12 +1,17 @@
 /// Hive Type IDs
-const kHiveTypeIdMovieVO = 0;
+
+const kHiveTypeUserVO = 6;
+
 
 /// Adapters
 
-const kAdapterNameMovieVO = "MovieVOAdapter";
+
+const kAdapterNameUserVO = "UserVOAdapter";
+
 
 /// Box name
-const kBoxNameMovieVO = "kBoxNameMovieVO";
+const kBoxNameUserVO = "kBoxNameUserVO";
+
 
 // keys
 const kBoxKeyUser = "userBoxKey";

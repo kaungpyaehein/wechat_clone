@@ -151,16 +151,20 @@ class LoginPage extends StatelessWidget {
 class PrimaryButtonWidget extends StatelessWidget {
   const PrimaryButtonWidget({
     super.key,
-      this.onTap,
+    this.onTap,
     required this.label,
     this.padding,
     this.size,
+    this.backgroundColor,
+    this.labelColor,
   });
 
   final void Function()? onTap;
   final String label;
   final EdgeInsets? padding;
   final Size? size;
+  final Color? backgroundColor;
+  final Color? labelColor;
 
   @override
   Widget build(BuildContext context) {
@@ -171,8 +175,8 @@ class PrimaryButtonWidget extends StatelessWidget {
         padding: padding ??
             const EdgeInsets.symmetric(
                 horizontal: kMargin45, vertical: kMargin15),
-        backgroundColor: kPrimaryColor,
-        foregroundColor: Colors.white,
+        backgroundColor: backgroundColor ?? kPrimaryColor,
+        foregroundColor: labelColor ?? Colors.white,
         side: const BorderSide(
           color: kPrimaryColor,
           width: 2,
@@ -186,7 +190,6 @@ class PrimaryButtonWidget extends StatelessWidget {
         child: Text(
           label,
           style: const TextStyle(
-            color: Colors.white,
             fontFamily: kYorkieDemo,
             fontSize: kTextRegular2X,
             fontWeight: FontWeight.w700,

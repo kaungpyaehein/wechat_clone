@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:wechat_clone/data/vos/user_vo.dart';
 
 abstract class AuthenticationModel {
@@ -12,4 +14,11 @@ abstract class AuthenticationModel {
   Future<void> logOut();
 
   Future<String> getOtp();
+
+  Future<String> uploadProfile(
+    File? file,
+  );
+  Future<void> updateUserInfo(UserVO userVO);
+
+  UserVO? getUserDataFromDatabase();
 }

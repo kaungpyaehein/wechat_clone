@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 
 abstract class WechatDataAgent {
@@ -7,4 +10,7 @@ abstract class WechatDataAgent {
   Future login(String email, String password);
   bool isLoggedIn();
   Future logOut();
+  Future<String> uploadFileToFirebase(File image);
+  Future<void> updateUserInfo(UserVO userVO);
+  Future<UserVO> getUserDataFromFirebase();
 }

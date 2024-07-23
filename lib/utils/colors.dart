@@ -7,3 +7,4 @@ const Color kPinPutBoxColor = Color(0xFFFCFCFC);
 
 const Color kScaffoldBackgroundColor =Color(0xFFFCFCFC);
 const Color kRedSelectedColor = Color(0xFFF6002C);
+const Color kErrorColor = Color(0xFFD92D20);

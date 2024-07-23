@@ -77,20 +77,13 @@ class RegisterBlocTwo extends ChangeNotifier {
     _showLoading();
     final UserVO userVO = UserVO(
         contacts: [
-          UserVO(
-              contacts: [],
-              name: name,
-              phone: phone,
-              password: password,
-              gender: gender,
-              email: email,
-              dob: "$day/$month/$year")
         ],
         name: name,
         phone: phone,
         password: password,
         gender: gender,
         email: email,
+        profileImage: "",
         dob: "$day/$month/$year");
     return authModel.register(userVO).whenComplete(
           () => _hideLoading(),

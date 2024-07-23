@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wechat_clone/pages/home/moment_page.dart';
+import 'package:wechat_clone/persistence/daos/user_dao.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
@@ -14,6 +13,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userVO = UserDao().getUserData();
     return Scaffold(
       appBar: buildDefaultAppBar(
         context: context,
@@ -43,10 +43,10 @@ class ProfilePage extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(120),
                     child: CachedNetworkImage(
-                      imageUrl:
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvakm_zio2J6a-PadL8SE6DjgZOB_5FlJz3w&s",
+                      imageUrl: userVO?.profileImage ?? "",
                       height: 120,
                       width: 120,
+                      fit: BoxFit.cover,
                     ),
                   ),
 
@@ -56,44 +56,44 @@ class ProfilePage extends StatelessWidget {
 
                   /// Infos
                   Flexible(
-                    child: const Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Kaung Pyae Hein",
-                          style: TextStyle(
+                          userVO?.name ?? "",
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: kTextRegular3X,
                               fontWeight: FontWeight.w400,
                               fontFamily: kYorkieDemo),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: kMarginMedium,
                         ),
                         _LabelAndIconView(
                           iconPath: kPhoneIcon,
-                          label: "09 1234 56789 ",
+                          label: userVO?.phone ?? "",
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: kMarginMedium,
                         ),
                         _LabelAndIconView(
                           iconPath: kEmailIcon,
-                          label: "kaungpyaehein@gmail.com",
+                          label: userVO?.email ?? "",
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: kMarginMedium,
                         ),
                         _LabelAndIconView(
                           iconPath: kDateIcon,
-                          label: "1988-06-05",
+                          label: userVO?.dob ?? "",
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: kMarginMedium,
                         ),
                         _LabelAndIconView(
                           iconPath: kGenderIcon,
-                          label: "Male",
+                          label: userVO?.gender ?? "",
                         ),
                       ],
                     ),

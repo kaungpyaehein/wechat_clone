@@ -21,7 +21,7 @@ extension NavigationUtility on Widget {
           style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.w500),
         ),
-        backgroundColor: kRedSelectedColor,
+        backgroundColor: kErrorColor,
       ),
     );
   }

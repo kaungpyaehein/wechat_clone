@@ -3,7 +3,9 @@ import 'package:datepicker_dropdown/order_format.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_clone/blocs/register_bloc_two.dart';
+import 'package:wechat_clone/data/vos/user_vo.dart';
 import 'package:wechat_clone/pages/auth/login_page.dart';
+import 'package:wechat_clone/pages/auth/upload_profile_page.dart';
 import 'package:wechat_clone/pages/home/home_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
@@ -136,11 +138,12 @@ class SignUpPageTwo extends StatelessWidget {
                                 .then((value) => Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const HomePage(),
+                                      builder: (context) => UploadProfilePage(),
                                     ),
                                     (route) => false))
-                                .catchError((error, _) => showSnackBarWithMessage(
-                                    context, error.toString()));
+                                .catchError((error, _) =>
+                                    showSnackBarWithMessage(
+                                        context, error.toString()));
                           },
                           label: "Sign Up"))
                 ],
