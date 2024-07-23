@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:wechat_clone/network/data_agents/cloud_firestore_data_agent_impl.dart';
 import 'package:wechat_clone/pages/home/chat_page.dart';
 import 'package:wechat_clone/pages/home/contacts_page.dart';
 import 'package:wechat_clone/pages/home/moment_page.dart';
@@ -28,6 +28,9 @@ class _HomePageState extends State<HomePage> {
   ];
   @override
   Widget build(BuildContext context) {
+    CloudFirestoreDataAgentImpl().getMoments().first.then((value) {
+      print(value[0].comments!.length.toString());
+    });
 
     return Scaffold(
       body: pages[selectedIndex],

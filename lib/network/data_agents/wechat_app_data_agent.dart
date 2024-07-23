@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 
 abstract class WechatDataAgent {
@@ -13,4 +14,10 @@ abstract class WechatDataAgent {
   Future<String> uploadFileToFirebase(File image);
   Future<void> updateUserInfo(UserVO userVO);
   Future<UserVO> getUserDataFromFirebase();
+
+  //// Moments
+
+  Stream<List<MomentVO>> getMoments();
+
+  Future<void> createNewMoment(MomentVO momentVO);
 }

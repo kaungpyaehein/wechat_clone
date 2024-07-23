@@ -11,7 +11,7 @@ class LoginBloc extends ChangeNotifier {
   bool isDisposed = false;
 
   /// Model
-  final AuthenticationModel _model = AuthModelImpl();
+  final AuthModel _model = AuthModelImpl();
 
   Future onTapLogin() {
     _showLoading();

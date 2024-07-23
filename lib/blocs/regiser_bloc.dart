@@ -13,7 +13,7 @@ class RegisterBlocOne extends ChangeNotifier {
 
   bool isDisposed = false;
 
-  final AuthenticationModel authModel = AuthModelImpl();
+  final AuthModel authModel = AuthModelImpl();
 
   RegisterBlocOne() {
     authModel.getOtp().then((code) {

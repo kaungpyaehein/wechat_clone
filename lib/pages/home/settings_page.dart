@@ -30,7 +30,7 @@ class SettingsPage extends StatelessWidget {
             padding: const EdgeInsets.all(kMarginMedium),
             size: const Size(kMarginXXLarge3, kMarginXLarge2),
             onTap: ()  {
-              AuthenticationModel authModel = AuthModelImpl();
+              AuthModel authModel = AuthModelImpl();
                authModel.logOut().then((_) => Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(

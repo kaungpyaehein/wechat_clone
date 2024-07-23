@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:wechat_clone/data/vos/user_vo.dart';
 
-abstract class AuthenticationModel {
+abstract class AuthModel {
   Future<void> login(String email, String password);
 
   Future<void> register(UserVO newUser);

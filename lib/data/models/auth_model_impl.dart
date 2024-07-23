@@ -6,7 +6,7 @@ import 'package:wechat_clone/network/data_agents/cloud_firestore_data_agent_impl
 import 'package:wechat_clone/network/data_agents/wechat_app_data_agent.dart';
 import 'package:wechat_clone/persistence/daos/user_dao.dart';
 
-class AuthModelImpl extends AuthenticationModel {
+class AuthModelImpl extends AuthModel {
   final WechatDataAgent wechatDataAgent = CloudFirestoreDataAgentImpl();
   final UserDao userDao = UserDao();
 

@@ -21,7 +21,7 @@ class RegisterBlocTwo extends ChangeNotifier {
 
   bool isDisposed = false;
 
-  final AuthenticationModel authModel = AuthModelImpl();
+  final AuthModel authModel = AuthModelImpl();
 
   RegisterBlocTwo(String phoneNumber) {
     phone = phoneNumber;

@@ -14,7 +14,7 @@ class UploadProfileBloc extends ChangeNotifier {
   UserVO? userVO;
 
   /// Model
-  final AuthenticationModel _model = AuthModelImpl();
+  final AuthModel _model = AuthModelImpl();
 
   UploadProfileBloc() {
     userVO = _model.getUserDataFromDatabase();
