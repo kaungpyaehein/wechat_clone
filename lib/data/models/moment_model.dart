@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:wechat_clone/data/vos/comment_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 
 
@@ -11,4 +12,8 @@ abstract class MomentModel {
   );
 
   Stream<List<MomentVO>> getMomentsFromNetwork();
+
+  Future<void> onAddComment(CommentVO commentVO, String momentId);
+
+  Future<void> onTapLike(String momentId, String userId);
 }

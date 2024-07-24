@@ -206,13 +206,14 @@ class CustomTextFieldWidget extends StatelessWidget {
     required this.labelText,
     this.isPasswordField,
     required this.onChanged,
-    this.inputType,
+    this.inputType, this.isAutoFocus,
   });
 
   final String labelText;
   final bool? isPasswordField;
   final void Function(String) onChanged;
   final TextInputType? inputType;
+  final bool? isAutoFocus;
 
   @override
   Widget build(BuildContext context) {
@@ -220,6 +221,7 @@ class CustomTextFieldWidget extends StatelessWidget {
       onChanged: onChanged,
       keyboardType: inputType,
       obscureText: isPasswordField ?? false,
+      autofocus: isAutoFocus ?? false,
       style: const TextStyle(
           color: kDefaultTextColor,
           fontSize: kTextRegular2X,

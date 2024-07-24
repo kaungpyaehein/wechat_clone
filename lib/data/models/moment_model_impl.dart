@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:wechat_clone/data/models/moment_model.dart';
+import 'package:wechat_clone/data/vos/comment_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/network/data_agents/cloud_firestore_data_agent_impl.dart';
 import 'package:wechat_clone/network/data_agents/wechat_app_data_agent.dart';
@@ -25,6 +26,16 @@ class MomentModelImpl extends MomentModel {
 
   @override
   Stream<List<MomentVO>> getMomentsFromNetwork() {
-   return wechatDataAgent.getMoments();
+    return wechatDataAgent.getMoments();
+  }
+
+  @override
+  Future<void> onAddComment(CommentVO commentVO, String momentId) {
+    return wechatDataAgent.onAddComment(momentId, commentVO);
+  }
+
+  @override
+  Future<void> onTapLike(String momentId, String userId) {
+    return wechatDataAgent.onTapLike(momentId, userId);
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wechat_clone/data/vos/comment_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 
@@ -20,4 +21,8 @@ abstract class WechatDataAgent {
   Stream<List<MomentVO>> getMoments();
 
   Future<void> createNewMoment(MomentVO momentVO);
+
+  Future<void> onAddComment(String momentId, CommentVO commentVO);
+
+  Future<void> onTapLike(String momentId, String userId);
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_clone/blocs/moment_feeds_bloc.dart';
+import 'package:wechat_clone/data/vos/comment_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
+import 'package:wechat_clone/pages/auth/login_page.dart';
 import 'package:wechat_clone/pages/home/create_new_moment_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
+import 'package:wechat_clone/utils/extensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
 import 'package:wechat_clone/utils/images.dart';
 import 'package:wechat_clone/widgets/svg_widget.dart';
@@ -30,26 +33,36 @@ class MomentPage extends StatelessWidget {
                 ));
           },
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: kMarginMedium3, vertical: kMarginMedium3),
-          child: Selector<MomentFeedsBloc, List<MomentVO>>(
-            selector: (context, bloc) => bloc.moments,
-            builder: (context, moments, child) {
-              return ListView.separated(
-                separatorBuilder: (context, index) => const SizedBox(
-                  height: kMarginLarge,
-                ),
-                itemCount: moments.length,
-                itemBuilder: (context, index) {
-                  return MomentItemView(
-                    momentV0: moments[index],
-                  );
-                },
+        body: const MomentListView(),
+      ),
+    );
+  }
+}
+
+class MomentListView extends StatelessWidget {
+  const MomentListView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+          horizontal: kMarginMedium3, vertical: kMarginMedium3),
+      child: Consumer<MomentFeedsBloc>(
+        builder: (context, bloc, child) {
+          return ListView.separated(
+            separatorBuilder: (context, index) => const SizedBox(
+              height: kMarginXXLarge,
+            ),
+            itemCount: bloc.moments.length,
+            itemBuilder: (context, index) {
+              return MomentItemView(
+                momentVO: bloc.moments[index],
               );
             },
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -90,9 +103,9 @@ AppBar buildDefaultAppBar(
 }
 
 class MomentItemView extends StatelessWidget {
-  const MomentItemView({super.key, required this.momentV0});
+  const MomentItemView({super.key, required this.momentVO});
 
-  final MomentVO momentV0;
+  final MomentVO momentVO;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +115,7 @@ class MomentItemView extends StatelessWidget {
       children: [
         /// Profile View
         ProfileView(
-          momentVO: momentV0,
+          momentVO: momentVO,
         ),
 
         /// Text and Images View
@@ -111,7 +124,7 @@ class MomentItemView extends StatelessWidget {
           height: kMargin12,
         ),
         Text(
-          momentV0.text ?? "",
+          momentVO.text ?? "",
           style: const TextStyle(
               color: kPrimaryColor,
               fontSize: kTextRegular2X,
@@ -121,37 +134,71 @@ class MomentItemView extends StatelessWidget {
         const SizedBox(
           height: kMargin12,
         ),
-        PhotoView(momentV0: momentV0),
+        PhotoView(momentV0: momentVO),
 
         /// Like and Comment View
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SvgImageWidget(
-                height: kDefaultIconSize,
-                width: kDefaultIconSize,
-                imagePath: kLikeIconFilled),
-            const SizedBox(
-              width: 2,
-            ),
-            Text(
-              momentV0.likes?.length.toString() ?? "0",
-              style: const TextStyle(
-                color: kRedSelectedColor,
-                fontSize: kText15,
-                fontWeight: FontWeight.w500,
-              ),
+            Consumer<MomentFeedsBloc>(
+              builder: (context, bloc, child) {
+                return Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        final bloc = context.read<MomentFeedsBloc>();
+                        bloc.onTapLike(momentVO.momentId ?? "");
+                      },
+                      child: SvgImageWidget(
+                          height: kDefaultIconSize,
+                          width: kDefaultIconSize,
+                          imagePath: bloc.isLiked(momentVO.likes ?? [])
+                              ? kLikeIconFilled
+                              : kLikeIcon),
+                    ),
+                    const SizedBox(
+                      width: 2,
+                    ),
+                    Text(
+                      momentVO.likes?.length.toString() ?? "0",
+                      style: TextStyle(
+                        color: bloc.isLiked(momentVO.likes ?? [])
+                            ? kRedSelectedColor
+                            : kDefaultTextColor,
+                        fontSize: kText15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
             const Spacer(),
-            const SvgImageWidget(
-                height: kDefaultIconSize,
-                width: kDefaultIconSize,
-                imagePath: kCommentIcon),
+            InkWell(
+              onTap: () {
+                final bloc = context.read<MomentFeedsBloc>();
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.white,
+                  builder: (context) => ListenableProvider.value(
+                    value: bloc,
+                    child: FractionallySizedBox(
+                        heightFactor: 0.5,
+                        child: CommentBottomSheetView(momentVO: momentVO)),
+                  ),
+                );
+              },
+              child: const SvgImageWidget(
+                  height: kDefaultIconSize,
+                  width: kDefaultIconSize,
+                  imagePath: kCommentIcon),
+            ),
             const SizedBox(
               width: 2,
             ),
             Text(
-              momentV0.comments?.length.toString() ?? "0",
+              momentVO.comments?.length.toString() ?? "0",
               style: const TextStyle(
                 color: kPrimaryColor,
                 fontSize: kText15,
@@ -167,6 +214,284 @@ class MomentItemView extends StatelessWidget {
                 imagePath: kBookMarkIcon),
           ],
         )
+      ],
+    );
+  }
+}
+
+class CommentBottomSheetView extends StatelessWidget {
+  const CommentBottomSheetView({
+    super.key,
+    required this.momentVO,
+  });
+
+  final MomentVO momentVO;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: kMarginMedium3),
+      child: Column(
+        children: [
+          const DraggerView(),
+
+          /// TITLE
+          CommentsSheetTitleView(
+            onAddButtonPressed: () {
+              final bloc = context.read<MomentFeedsBloc>();
+              Navigator.pop(context);
+
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.white,
+                builder: (context) => ListenableProvider.value(
+                  value: bloc,
+                  child: FractionallySizedBox(
+                      heightFactor: 0.5,
+                      child: AddCommentBottomSheetView(momentVO: momentVO)),
+                ),
+              );
+            },
+          ),
+
+          /// COMMENTS
+          Expanded(
+            child: CommentListView(momentVO: momentVO),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class AddCommentBottomSheetView extends StatelessWidget {
+  const AddCommentBottomSheetView({
+    super.key,
+    required this.momentVO,
+  });
+
+  final MomentVO momentVO;
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.read<MomentFeedsBloc>();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: kMarginMedium3),
+      child: Column(
+        children: [
+          const DraggerView(),
+
+          // Title
+          const Text(
+            "Add new comment",
+            style: TextStyle(
+                color: kPrimaryColor,
+                fontFamily: kYorkieDemo,
+                fontWeight: FontWeight.bold,
+                fontSize: kTextHeading1X),
+          ),
+
+          const SizedBox(
+            height: kMarginSmall,
+          ),
+
+          CustomTextFieldWidget(
+            isAutoFocus: true,
+            labelText: "Comment as ${momentVO.userName}",
+            onChanged: (text) {
+              bloc.onChangeCommentText(text);
+            },
+          ),
+          const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              PrimaryButtonWidget(
+                  backgroundColor: Colors.white,
+                  size: const Size(double.infinity, 50),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  labelColor: kDefaultTextColor,
+                  label: "Cancel"),
+              PrimaryButtonWidget(
+                  size: const Size(double.infinity, 50),
+                  backgroundColor: kPrimaryColor,
+                  labelColor: Colors.white,
+                  onTap: () {
+                    bloc.onAddNewComment(momentVO.momentId ?? "").then((value) {
+                      Navigator.pop(context);
+                    }).catchError((error) {
+                      showErrorSnackBarWithMessage(context, error.toString());
+                    });
+                  },
+                  label: "Comment")
+            ],
+          ),
+
+          const SizedBox(
+            height: kMarginMedium4,
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class CommentsSheetTitleView extends StatelessWidget {
+  const CommentsSheetTitleView({
+    super.key,
+    required this.onAddButtonPressed,
+  });
+  final void Function()? onAddButtonPressed;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SizedBox(
+          width: kMarginXLarge2,
+        ),
+        const Spacer(),
+        const Text(
+          "Comments",
+          style: TextStyle(
+              color: kPrimaryColor,
+              fontFamily: kYorkieDemo,
+              fontWeight: FontWeight.bold,
+              fontSize: kTextHeading1X),
+        ),
+        const Spacer(),
+        IconButton(
+          onPressed: onAddButtonPressed,
+          icon: const Icon(
+            Icons.add_circle_outline,
+            color: kPrimaryColor,
+            size: kMarginXLarge,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class CommentListView extends StatelessWidget {
+  const CommentListView({
+    super.key,
+    required this.momentVO,
+  });
+
+  final MomentVO momentVO;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return CommentItemView(commentVO: momentVO.comments?[index]);
+        },
+        separatorBuilder: (context, index) => const SizedBox(
+              height: kMarginMedium,
+            ),
+        itemCount: momentVO.comments?.length ?? 0);
+  }
+}
+
+class CommentItemView extends StatelessWidget {
+  const CommentItemView({
+    super.key,
+    this.commentVO,
+  });
+
+  final CommentVO? commentVO;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// Profile
+        ClipRRect(
+          borderRadius: BorderRadius.circular(kMarginXLarge2),
+          child: Image.network(
+            commentVO?.userProfile ?? '',
+            height: kMarginXLarge2,
+            width: kMarginXLarge2,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Container(
+              color: kGreyTextColor,
+              height: kMarginXLarge2,
+              width: kMarginXLarge2,
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: kMarginMedium2,
+        ),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: kChatContainerColor,
+              borderRadius: BorderRadius.circular(kMarginMedium),
+            ),
+            padding: const EdgeInsets.all(kMarginMedium2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// Name
+                Text(
+                  commentVO?.userName ?? "",
+                  style: const TextStyle(
+                    color: kDefaultTextColor,
+                    fontSize: kTextRegular,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: kMarginSmall),
+                Text(
+                  commentVO?.commentText ?? "",
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: kGreyTextColor,
+                    fontSize: kTextRegular,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class DraggerView extends StatelessWidget {
+  const DraggerView({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(
+          height: kMarginMedium2,
+        ),
+        Container(
+          width: 44,
+          height: 4,
+          decoration: ShapeDecoration(
+            color: const Color(0xFFDEDEDE),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
+        const SizedBox(
+          height: kMarginMedium2,
+        ),
       ],
     );
   }
