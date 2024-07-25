@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:wechat_clone/data/models/auth_model.dart';
 import 'package:wechat_clone/data/models/auth_model_impl.dart';
-import 'package:wechat_clone/data/models/moment_model.dart';
-import 'package:wechat_clone/data/models/moment_model_impl.dart';
+import 'package:wechat_clone/data/models/app_model.dart';
+import 'package:wechat_clone/data/models/app_model_impl.dart';
 import 'package:wechat_clone/data/vos/comment_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
@@ -18,15 +18,14 @@ class MomentFeedsBloc extends ChangeNotifier {
   List<MomentVO> moments = [];
 
   String? commentText;
-  final MomentModel _momentModel = MomentModelImpl();
+  final AppModel _appModel = AppModelImpl();
   final AuthModel _authModelImpl = AuthModelImpl();
   StreamSubscription? _momentsSubscription;
   UserVO? currentUser;
 
   MomentFeedsBloc() {
     currentUser = _authModelImpl.getUserDataFromDatabase();
-    _momentsSubscription =
-        _momentModel.getMomentsFromNetwork().listen((moments) {
+    _momentsSubscription = _appModel.getMomentsFromNetwork().listen((moments) {
       this.moments = moments;
       _notifySafely();
     });
@@ -41,7 +40,7 @@ class MomentFeedsBloc extends ChangeNotifier {
       currentUser?.name ?? "",
       currentUser?.profileImage ?? "",
     );
-    return _momentModel
+    return _appModel
         .onAddComment(commentVO, momentId)
         .whenComplete(() => _hideLoading());
   }
@@ -52,7 +51,7 @@ class MomentFeedsBloc extends ChangeNotifier {
   }
 
   void onTapLike(String momentId) {
-    _momentModel.onTapLike(momentId, currentUser?.id ?? "");
+    _appModel.onTapLike(momentId, currentUser?.id ?? "");
   }
 
   bool isLiked(List<String> likes) {

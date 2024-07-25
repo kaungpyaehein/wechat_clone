@@ -25,4 +25,6 @@ abstract class WechatDataAgent {
   Future<void> onAddComment(String momentId, CommentVO commentVO);
 
   Future<void> onTapLike(String momentId, String userId);
+
+  Future addNewFriend(UserVO myUserInfo, String newFriendId);
 }

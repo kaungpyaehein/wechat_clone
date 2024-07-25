@@ -21,4 +21,6 @@ abstract class AuthModel {
   Future<void> updateUserInfo(UserVO userVO);
 
   UserVO? getUserDataFromDatabase();
+
+
 }

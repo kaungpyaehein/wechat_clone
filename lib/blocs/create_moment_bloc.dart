@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:wechat_clone/data/models/auth_model.dart';
 import 'package:wechat_clone/data/models/auth_model_impl.dart';
-import 'package:wechat_clone/data/models/moment_model.dart';
-import 'package:wechat_clone/data/models/moment_model_impl.dart';
+import 'package:wechat_clone/data/models/app_model.dart';
+import 'package:wechat_clone/data/models/app_model_impl.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 import 'package:wechat_clone/utils/camera_utils.dart';
@@ -31,7 +31,7 @@ class CreateMomentBloc extends ChangeNotifier {
 
   /// Model
   final AuthModel _model = AuthModelImpl();
-  final MomentModel _momentModel = MomentModelImpl();
+  final AppModel _momentModel = AppModelImpl();
 
   CreateMomentBloc() {
     momentId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -58,7 +58,8 @@ class CreateMomentBloc extends ChangeNotifier {
       [],
       [],
     );
-    await _momentModel.createNewMoment(newMoment).catchError((error) {
+    await _momentModel.createNewMoment(newMoment)
+        .catchError((error) {
       return Future.error("Error Creating Moment: ${error.toString()}");
     }).whenComplete(() => _hideLoading());
   }

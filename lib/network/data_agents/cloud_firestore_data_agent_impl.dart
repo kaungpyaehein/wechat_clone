@@ -125,27 +125,30 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
     final user = auth.currentUser;
     if (user != null) {
       final userId = user.uid;
-      final userDoc =
-          await _firestore.collection(usersCollection).doc(userId).get();
-      final contactDocs = await _firestore
-          .collection(usersCollection)
-          .doc(userId)
-          .collection(contactCollection)
-          .get();
-      if (userDoc.exists) {
-        final List<UserVO> contacts = contactDocs.docs
-            .map((contact) => UserVO.fromJson(
-                  contact.data(),
-                ))
-            .toList();
-
-        return UserVO.fromJson(userDoc.data()!).copyWith(contacts: contacts);
-      } else {
-        return Future.error(
-            "Error fetching user data: Document does not exist");
-      }
+      return getUserDataFromFirestore(userId);
     } else {
       return Future.error("Error fetching user data: User not logged in");
+    }
+  }
+
+  Future<UserVO> getUserDataFromFirestore(String userId) async {
+    final userDoc =
+        await _firestore.collection(usersCollection).doc(userId).get();
+    final contactDocs = await _firestore
+        .collection(usersCollection)
+        .doc(userId)
+        .collection(contactCollection)
+        .get();
+    if (userDoc.exists) {
+      final List<UserVO> contacts = contactDocs.docs
+          .map((contact) => UserVO.fromJson(
+                contact.data(),
+              ))
+          .toList();
+
+      return UserVO.fromJson(userDoc.data()!).copyWith(contacts: contacts);
+    } else {
+      return Future.error("Error fetching user data: Document does not exist");
     }
   }
 
@@ -154,113 +157,149 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
   //   return _firestore
   //       .collection(momentCollection)
   //       .snapshots()
-  //       .asyncMap((querySnapshot) async {
-  //     List<MomentVO> moments = [];
+  //       .asyncExpand((querySnapshot) {
+  //     // Create a list of streams for each document's changes.
+  //     List<Stream<MomentVO>> documentStreams = querySnapshot.docs.map((doc) {
+  //       // Stream for the document itself
+  //       Stream<MomentVO> momentStream =
+  //           doc.reference.snapshots().map((documentSnapshot) {
+  //         MomentVO moment = MomentVO.fromJson(
+  //             documentSnapshot.data() as Map<String, dynamic>);
+  //         return moment;
+  //       });
   //
-  //     for (var doc in querySnapshot.docs) {
-  //       try {
-  //         var moment = MomentVO.fromJson(doc.data());
+  //       // Stream for the comments collection
+  //       Stream<List<CommentVO>> commentsStream = doc.reference
+  //           .collection(commentCollection)
+  //           .snapshots()
+  //           .map((commentsSnapshot) => commentsSnapshot.docs
+  //               .map((subDoc) => CommentVO.fromJson(subDoc.data()))
+  //               .toList());
   //
-  //         // Fetch comments data
-  //         var commentsSnapshot =
-  //             await doc.reference.collection(commentCollection).get();
-  //         var commentsData = commentsSnapshot.docs.map((subDoc) {
-  //           return CommentVO.fromJson(subDoc.data());
-  //         }).toList();
+  //       // Stream for the likes collection
+  //       Stream<List<String>> likesStream = doc.reference
+  //           .collection(likeCollection)
+  //           .snapshots()
+  //           .map((likesSnapshot) =>
+  //               likesSnapshot.docs.map((subDoc) => subDoc.id).toList());
   //
-  //         moment.comments = commentsData;
-  //         moments.add(moment);
-  //       } catch (e) {
-  //         print("Error processing document ${doc.id}: $e");
-  //       }
-  //     }
+  //       // Combine the moment, comments, and likes streams
+  //       return Rx.combineLatest3(
+  //         momentStream,
+  //         commentsStream,
+  //         likesStream,
+  //         (MomentVO moment, List<CommentVO> comments, List<String> likes) {
+  //           moment.comments = comments;
+  //           moment.likes = likes;
+  //           return moment;
+  //         },
+  //       );
+  //     }).toList();
   //
-  //     return moments;
+  //     // Combine all document streams into one stream of lists of moments
+  //     return Rx.combineLatestList(documentStreams);
   //   });
   // }
-  // Stream<List<MomentVO>> getMoments() {
-  //   return _firestore
-  //       .collection(momentCollection)
-  //       .snapshots()
-  //       .asyncMap((querySnapshot) async {
-  //     List<MomentVO> moments = [];
-  //
-  //     for (var doc in querySnapshot.docs) {
-  //       try {
-  //         var moment = MomentVO.fromJson(doc.data());
-  //
-  //         // Fetch comments data
-  //         var commentsSnapshot =
-  //             await doc.reference.collection(commentCollection).get();
-  //         var commentsData = commentsSnapshot.docs.map((subDoc) {
-  //           return CommentVO.fromJson(subDoc.data());
-  //         }).toList();
-  //
-  //         // Fetch likes data
-  //         var likesSnapshot =
-  //             await doc.reference.collection(likeCollection).get();
-  //         var likesData =
-  //             likesSnapshot.docs.map((subDoc) => subDoc.id).toList();
-  //
-  //         moment.comments = commentsData;
-  //         moment.likes = likesData;
-  //         moments.add(moment);
-  //       } catch (e) {
-  //         print("Error processing document ${doc.id}: $e");
-  //       }
-  //     }
-  //
-  //     return moments;
-  //   });
-  // }
-
   Stream<List<MomentVO>> getMoments() {
     return _firestore
         .collection(momentCollection)
         .snapshots()
         .asyncExpand((querySnapshot) {
+      print('Collection snapshot updated');
+
       // Create a list of streams for each document's changes.
       List<Stream<MomentVO>> documentStreams = querySnapshot.docs.map((doc) {
+        print('Document found: ${doc.id}');
+
         // Stream for the document itself
-        Stream<MomentVO> momentStream =
+        Stream<MomentVO?> momentStream =
             doc.reference.snapshots().map((documentSnapshot) {
-          MomentVO moment = MomentVO.fromJson(
-              documentSnapshot.data() as Map<String, dynamic>);
-          return moment;
+          if (documentSnapshot.exists && documentSnapshot.data() != null) {
+            print('Moment snapshot updated: ${documentSnapshot.data()}');
+            return MomentVO.fromJson(
+                documentSnapshot.data() as Map<String, dynamic>);
+          } else {
+            // Handle the case where the document doesn't exist or data is null
+            print(
+                'Moment document does not exist or data is null for doc id: ${doc.id}');
+            return null; // Return null to indicate the document is invalid
+          }
         });
 
         // Stream for the comments collection
         Stream<List<CommentVO>> commentsStream = doc.reference
             .collection(commentCollection)
             .snapshots()
-            .map((commentsSnapshot) => commentsSnapshot.docs
-                .map((subDoc) => CommentVO.fromJson(subDoc.data()))
-                .toList());
+            .map((commentsSnapshot) {
+          print('Comments snapshot updated for document: ${doc.id}');
+          return commentsSnapshot.docs.map((subDoc) {
+            print('Comment found: ${subDoc.data()}');
+            return CommentVO.fromJson(subDoc.data());
+          }).toList();
+        });
 
         // Stream for the likes collection
         Stream<List<String>> likesStream = doc.reference
             .collection(likeCollection)
             .snapshots()
-            .map((likesSnapshot) =>
-                likesSnapshot.docs.map((subDoc) => subDoc.id).toList());
+            .map((likesSnapshot) {
+          print('Likes snapshot updated for document: ${doc.id}');
+          return likesSnapshot.docs.map((subDoc) {
+            print('Like found: ${subDoc.id}');
+            return subDoc.id;
+          }).toList();
+        });
 
         // Combine the moment, comments, and likes streams
-        return Rx.combineLatest3(
+        return Rx.combineLatest3<MomentVO?, List<CommentVO>, List<String>,
+            MomentVO>(
           momentStream,
           commentsStream,
           likesStream,
-          (MomentVO moment, List<CommentVO> comments, List<String> likes) {
-            moment.comments = comments;
-            moment.likes = likes;
-            return moment;
+          (MomentVO? moment, List<CommentVO> comments, List<String> likes) {
+            if (moment != null) {
+              moment.comments = comments;
+              moment.likes = likes;
+              return moment;
+            } else {
+              throw Exception('Moment data is null');
+            }
           },
         );
       }).toList();
 
       // Combine all document streams into one stream of lists of moments
-      return Rx.combineLatestList(documentStreams);
+      return Rx.combineLatestList<MomentVO>(documentStreams).map((moments) {
+        print('Moments list updated: $moments');
+        return moments;
+      });
     });
   }
+  // Stream<List<MomentVO>> getMoments() async* {
+  //   // Listen to the collection snapshot.
+  //   await for (var querySnapshot in _firestore.collection(momentCollection).snapshots()) {
+  //     // List of Futures for each document.
+  //     List<Future<MomentVO>> momentFutures = querySnapshot.docs.map((doc) async {
+  //       // Get the moment document data.
+  //       var documentSnapshot = await doc.reference.get();
+  //       MomentVO moment = MomentVO.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+  //
+  //       // Get the comments for the moment.
+  //       var commentsSnapshot = await doc.reference.collection(commentCollection).get();
+  //       moment.comments = commentsSnapshot.docs.map((subDoc) => CommentVO.fromJson(subDoc.data())).toList();
+  //
+  //       // Get the likes for the moment.
+  //       var likesSnapshot = await doc.reference.collection(likeCollection).get();
+  //       moment.likes = likesSnapshot.docs.map((subDoc) => subDoc.id).toList();
+  //
+  //       return moment;
+  //     }).toList();
+  //
+  //     // Wait for all moment futures to complete.
+  //     List<MomentVO> moments = await Future.wait(momentFutures);
+  //     yield moments;
+  //   }
+  // }
 
   @override
   Future<void> createNewMoment(MomentVO momentVO) async {
@@ -294,7 +333,8 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
   @override
   Future<void> onTapLike(String momentId, String userId) async {
     try {
-      final momentDocRef = _firestore.collection(momentCollection).doc(momentId);
+      final momentDocRef =
+          _firestore.collection(momentCollection).doc(momentId);
       final likeDocRef = momentDocRef.collection(likeCollection).doc(userId);
 
       // Check if the like document already exists
@@ -312,4 +352,72 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
     }
   }
 
+  @override
+  Future<void> addNewFriend(UserVO myUserInfo, String newFriendId) async {
+    try {
+      final myUserDoc =
+          _firestore.collection(usersCollection).doc(myUserInfo.id);
+      final newFriendDoc =
+          _firestore.collection(usersCollection).doc(newFriendId);
+
+      // Get new friend's info
+      final UserVO newFriendUserVO =
+          await getUserDataFromFirestore(newFriendId);
+
+      // Ensure new friend's data is retrieved
+      if (newFriendUserVO.id?.isEmpty ?? false) {
+        throw Exception("New friend not found");
+      } // Check if the contact already exists for both users
+      final myContactDoc =
+          myUserDoc.collection(contactCollection).doc(newFriendId);
+      final newFriendContactDoc =
+          newFriendDoc.collection(contactCollection).doc(myUserInfo.id);
+      final myContactSnapshot = await myContactDoc.get();
+      final newFriendContactSnapshot = await newFriendContactDoc.get();
+
+      // If contact already exists, do not add
+      if (myContactSnapshot.exists || newFriendContactSnapshot.exists) {
+        throw Exception("Contact already exists");
+      }
+
+      // Add user info to respective docs
+      await Future.wait([
+        myUserDoc
+            .collection(contactCollection)
+            .doc(newFriendId)
+            .set(newFriendUserVO.copyWith(contacts: []).toJson()),
+        newFriendDoc
+            .collection(contactCollection)
+            .doc(myUserInfo.id)
+            .set(myUserInfo.copyWith(contacts: []).toJson()),
+      ]);
+    } catch (error) {
+      throw Exception("Error adding new friend: ${error.toString()}");
+    }
+  }
+
+  // @override
+  // Future addNewFriend(UserVO myUserInfo, String newFriendId) async {
+  //   final myUserDoc = _firestore.collection(usersCollection).doc(myUserInfo.id);
+  //   final newFriendDoc =
+  //       _firestore.collection(usersCollection).doc(newFriendId);
+  //
+  //   /// get new friend's infos
+  //
+  //   final UserVO newFriendUserV0 = await getUserDataFromFirestore(newFriendId);
+  //
+  //   /// add use info to respective doc
+  //   return Future.wait([
+  //     myUserDoc
+  //         .collection(contactCollection)
+  //         .doc(newFriendId)
+  //         .set(newFriendUserV0.toJson()),
+  //     newFriendDoc
+  //         .collection(contactCollection)
+  //         .doc(myUserInfo.id)
+  //         .set(myUserInfo.toJson()),
+  //   ]).catchError((error) {
+  //     throw Exception("Error adding new friend: ${error.toString()}");
+  //   });
+  // }
 }

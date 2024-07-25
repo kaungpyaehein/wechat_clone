@@ -64,4 +64,6 @@ class AuthModelImpl extends AuthModel {
   UserVO? getUserDataFromDatabase() {
     return userDao.getUserData();
   }
+
+
 }
