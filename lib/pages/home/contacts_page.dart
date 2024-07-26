@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:wechat_clone/blocs/contacts_bloc.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 import 'package:wechat_clone/pages/auth/login_page.dart';
+import 'package:wechat_clone/pages/home/chat_details_page.dart';
 import 'package:wechat_clone/pages/home/moment_page.dart';
 import 'package:wechat_clone/pages/home/qr_scanner_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
@@ -65,48 +66,60 @@ class ContactListView extends StatelessWidget {
       builder: (context, contacts, child) {
         return ListView.separated(
             itemBuilder: (context, index) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(kMarginMedium),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x3F9C9C9C),
-                      blurRadius: 4,
-                      offset: Offset(1, 1),
-                      spreadRadius: 0,
-                    )
-                  ],
-                ),
-                padding: const EdgeInsets.all(kMarginMedium),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(kMarginXLarge2),
-                      child: Image.network(
-                        contacts[index].profileImage ?? "",
-                        height: kMarginXLarge2,
-                        width: kMarginXLarge2,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: kGreyTextColor,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatDetailsPage(
+                          userToChat: contacts[index],
+                        ),
+                      ));
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(kMarginMedium),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x3F9C9C9C),
+                        blurRadius: 4,
+                        offset: Offset(1, 1),
+                        spreadRadius: 0,
+                      )
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(kMarginMedium),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(kMarginXLarge2),
+                        child: Image.network(
+                          contacts[index].profileImage ?? "",
                           height: kMarginXLarge2,
                           width: kMarginXLarge2,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                            color: kGreyTextColor,
+                            height: kMarginXLarge2,
+                            width: kMarginXLarge2,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: kMarginMedium,
-                    ),
-                    Text(
-                      contacts[index].name ?? "",
-                      style: const TextStyle(
-                          color: kPrimaryColor,
-                          fontSize: kTextRegular2X,
-                          fontWeight: FontWeight.normal),
-                    )
-                  ],
+                      const SizedBox(
+                        width: kMarginMedium,
+                      ),
+                      Text(
+                        contacts[index].name ?? "",
+                        style: const TextStyle(
+                            color: kPrimaryColor,
+                            fontSize: kTextRegular2X,
+                            fontWeight: FontWeight.normal),
+                      )
+                    ],
+                  ),
                 ),
               );
             },

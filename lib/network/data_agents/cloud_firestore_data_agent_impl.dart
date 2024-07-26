@@ -1,21 +1,29 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/streams.dart';
 import 'package:wechat_clone/data/vos/comment_vo.dart';
+import 'package:wechat_clone/data/vos/message_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 import 'package:wechat_clone/network/data_agents/wechat_app_data_agent.dart';
 
+/// firestore
 const otpCollection = "otp";
 const usersCollection = "users";
 const contactCollection = "contacts";
 const momentCollection = "moments";
 const commentCollection = "comments";
 const likeCollection = "likes";
+
+/// realtime database paths
+const chatPath = "chats";
+
+/// File Upload References
 const fileUploadRef = "upload";
 
 class CloudFirestoreDataAgentImpl extends WechatDataAgent {
@@ -37,6 +45,9 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
 
   /// Auth
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  /// Realtime Database
+  var databaseRef = FirebaseDatabase.instance.ref();
 
   @override
   Future<String> getOtpCode() {
@@ -203,27 +214,18 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
   Stream<List<MomentVO>> getMoments() {
     return _firestore
         .collection(momentCollection)
+        .orderBy("momentId", descending: true)
         .snapshots()
         .asyncExpand((querySnapshot) {
-      print('Collection snapshot updated');
-
       // Create a list of streams for each document's changes.
       List<Stream<MomentVO>> documentStreams = querySnapshot.docs.map((doc) {
-        print('Document found: ${doc.id}');
-
         // Stream for the document itself
-        Stream<MomentVO?> momentStream =
-            doc.reference.snapshots().map((documentSnapshot) {
-          if (documentSnapshot.exists && documentSnapshot.data() != null) {
-            print('Moment snapshot updated: ${documentSnapshot.data()}');
-            return MomentVO.fromJson(
-                documentSnapshot.data() as Map<String, dynamic>);
-          } else {
-            // Handle the case where the document doesn't exist or data is null
-            print(
-                'Moment document does not exist or data is null for doc id: ${doc.id}');
-            return null; // Return null to indicate the document is invalid
-          }
+        Stream<MomentVO?> momentStream = doc.reference
+            .snapshots()
+            .where((documentSnapshot) => documentSnapshot.exists)
+            .map((documentSnapshot) {
+          return MomentVO.fromJson(
+              documentSnapshot.data() as Map<String, dynamic>);
         });
 
         // Stream for the comments collection
@@ -231,7 +233,6 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
             .collection(commentCollection)
             .snapshots()
             .map((commentsSnapshot) {
-          print('Comments snapshot updated for document: ${doc.id}');
           return commentsSnapshot.docs.map((subDoc) {
             print('Comment found: ${subDoc.data()}');
             return CommentVO.fromJson(subDoc.data());
@@ -396,28 +397,91 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
     }
   }
 
-  // @override
-  // Future addNewFriend(UserVO myUserInfo, String newFriendId) async {
-  //   final myUserDoc = _firestore.collection(usersCollection).doc(myUserInfo.id);
-  //   final newFriendDoc =
-  //       _firestore.collection(usersCollection).doc(newFriendId);
-  //
-  //   /// get new friend's infos
-  //
-  //   final UserVO newFriendUserV0 = await getUserDataFromFirestore(newFriendId);
-  //
-  //   /// add use info to respective doc
-  //   return Future.wait([
-  //     myUserDoc
-  //         .collection(contactCollection)
-  //         .doc(newFriendId)
-  //         .set(newFriendUserV0.toJson()),
-  //     newFriendDoc
-  //         .collection(contactCollection)
-  //         .doc(myUserInfo.id)
-  //         .set(myUserInfo.toJson()),
-  //   ]).catchError((error) {
-  //     throw Exception("Error adding new friend: ${error.toString()}");
-  //   });
-  // }
+  @override
+  Future<void> sendMessage(MessageVO messageVO, String receiverId) async {
+    /// Save message to sender side
+    await databaseRef.child("chats").update({
+      "${messageVO.senderId}/$receiverId/${messageVO.timeStamp}":
+          messageVO.toJson(),
+    });
+
+    /// Save message to receiver side
+    await databaseRef.child("chats").update({
+      "$receiverId/${messageVO.senderId}/${messageVO.timeStamp}":
+          messageVO.toJson(),
+    });
+  }
+
+  @override
+  Stream<List<MessageVO>> getChatDetails(String senderId, String receiverId) {
+    /// GET MESSAGE Snapshots
+    return databaseRef
+        .child("chats/$senderId/$receiverId")
+        .orderByChild("timeStamp")
+        .onValue
+        .map((event) {
+      DataSnapshot dataSnapshot = event.snapshot;
+      var values = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+      List<MessageVO> messages = [];
+
+      /// Type cast each snapshot to a MessageVO
+      if (values != null) {
+        values.forEach((key, value) {
+          messages.add(MessageVO.fromJson({
+            ...value,
+            'id': key,
+          }));
+        });
+        messages.sort((a, b) => b.timeStamp!.compareTo(a.timeStamp!));
+      }
+
+      return messages;
+    });
+  }
+
+  @override
+  Future<List<String>> getChatIdList(String currentUserId) {
+    return databaseRef.child("$chatPath/$currentUserId").onValue.map((event) {
+      DataSnapshot dataSnapshot = event.snapshot;
+      var values = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+      List<String> keyList = [];
+
+      // Type cast each snapshot to key list
+      if (values != null) {
+        values.forEach((key, value) {
+          keyList.add(key.toString());
+        });
+      }
+
+      return keyList;
+    }).first;
+  }
+
+  @override
+  Stream<MessageVO?> getLastMessageByChatId(
+      String chatId, String currentUserId) {
+    return databaseRef
+        .child("$chatPath/$currentUserId/$chatId")
+        .orderByChild("id")
+        .limitToLast(1)
+        .onValue
+        .map((event) {
+      if (event.snapshot.exists) {
+        /// CONVERT SNAPSHOT TO JSON
+        Map<String, dynamic> jsonString =
+            json.decode(jsonEncode(event.snapshot.value).toString());
+
+        //// CONVERT Json TO MAP ENTRY
+        MapEntry<String, dynamic> messageDate = jsonString.entries.first;
+
+        return MessageVO.fromJson(messageDate.value);
+      } else {
+        return null; // No messages found
+      }
+    }).handleError((error) {
+      return null;
+    });
+  }
 }

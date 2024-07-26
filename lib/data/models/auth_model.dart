@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:wechat_clone/data/vos/message_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 
 abstract class AuthModel {
@@ -21,6 +22,7 @@ abstract class AuthModel {
   Future<void> updateUserInfo(UserVO userVO);
 
   UserVO? getUserDataFromDatabase();
+
 
 
 }

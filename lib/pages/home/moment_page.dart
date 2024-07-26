@@ -134,7 +134,7 @@ class MomentItemView extends StatelessWidget {
         const SizedBox(
           height: kMargin12,
         ),
-        PhotoView(momentV0: momentVO),
+        ImageView(momentV0: momentVO),
 
         /// Like and Comment View
         Row(
@@ -497,8 +497,8 @@ class DraggerView extends StatelessWidget {
   }
 }
 
-class PhotoView extends StatelessWidget {
-  const PhotoView({
+class ImageView extends StatelessWidget {
+  const ImageView({
     super.key,
     required this.momentV0,
   });

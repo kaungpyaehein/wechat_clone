@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:wechat_clone/data/models/auth_model.dart';
+import 'package:wechat_clone/data/vos/message_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 import 'package:wechat_clone/network/data_agents/cloud_firestore_data_agent_impl.dart';
 import 'package:wechat_clone/network/data_agents/wechat_app_data_agent.dart';
@@ -64,6 +65,7 @@ class AuthModelImpl extends AuthModel {
   UserVO? getUserDataFromDatabase() {
     return userDao.getUserData();
   }
+
 
 
 }

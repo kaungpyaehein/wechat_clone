@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wechat_clone/data/vos/comment_vo.dart';
+import 'package:wechat_clone/data/vos/message_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 
@@ -27,4 +29,13 @@ abstract class WechatDataAgent {
   Future<void> onTapLike(String momentId, String userId);
 
   Future addNewFriend(UserVO myUserInfo, String newFriendId);
+
+  Future<void> sendMessage(MessageVO messageVO, String receiverId);
+
+  Stream<List<MessageVO>> getChatDetails(String senderId, String receiverId);
+
+  Future<List<String>> getChatIdList(String currentUserId);
+
+  Stream<MessageVO?> getLastMessageByChatId(
+      String chatId, String currentUserId);
 }

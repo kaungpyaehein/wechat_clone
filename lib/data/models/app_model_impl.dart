@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:wechat_clone/data/models/app_model.dart';
 import 'package:wechat_clone/data/vos/comment_vo.dart';
+import 'package:wechat_clone/data/vos/message_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 import 'package:wechat_clone/network/data_agents/cloud_firestore_data_agent_impl.dart';
@@ -65,5 +66,29 @@ class AppModelImpl extends AppModel {
   @override
   void syncUserDataWithLocal(UserVO userVO) {
     userDao.saveUserData(userVO);
+  }
+
+  @override
+  Stream<List<MessageVO>> getChatDetails(String receiverId) {
+    return wechatDataAgent.getChatDetails(
+        getUserDataFromDatabase()?.id ?? "", receiverId);
+  }
+
+  @override
+  Future<void> sendMessage(MessageVO messageVO, String receiverId) {
+    return wechatDataAgent.sendMessage(messageVO, receiverId);
+  }
+
+  @override
+  Future<List<String>> getChatIdList() {
+    return wechatDataAgent.getChatIdList(getUserDataFromDatabase()?.id ?? "");
+  }
+
+  @override
+  Stream<MessageVO?> getLastMessageByChatId(
+    String chatId,
+  ) {
+    return wechatDataAgent.getLastMessageByChatId(
+        chatId, getUserDataFromDatabase()?.id ?? "");
   }
 }

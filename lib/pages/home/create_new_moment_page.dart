@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_clone/blocs/create_moment_bloc.dart';
 import 'package:wechat_clone/pages/auth/login_page.dart';
+import 'package:wechat_clone/pages/home/home_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/extensions.dart';
@@ -175,7 +176,8 @@ class CreateNewMomentPage extends StatelessWidget {
             onTap: () {
               final bloc = context.read<CreateMomentBloc>();
               bloc.onTapCreateMoment().then((value) {
-                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomePage(),),
+                        (route) => false);
               }).catchError((error) {
                 showErrorSnackBarWithMessage(context, error);
               });

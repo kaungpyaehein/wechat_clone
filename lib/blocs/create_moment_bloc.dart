@@ -31,7 +31,7 @@ class CreateMomentBloc extends ChangeNotifier {
 
   /// Model
   final AuthModel _model = AuthModelImpl();
-  final AppModel _momentModel = AppModelImpl();
+  final AppModel _appModel = AppModelImpl();
 
   CreateMomentBloc() {
     momentId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -58,7 +58,7 @@ class CreateMomentBloc extends ChangeNotifier {
       [],
       [],
     );
-    await _momentModel.createNewMoment(newMoment)
+    await _appModel.createNewMoment(newMoment)
         .catchError((error) {
       return Future.error("Error Creating Moment: ${error.toString()}");
     }).whenComplete(() => _hideLoading());
@@ -66,7 +66,7 @@ class CreateMomentBloc extends ChangeNotifier {
 
   Future<void> uploadPhotoToFirestore() async {
     for (var image in images) {
-      await _momentModel.uploadPhotoToFirebase(image).then((imageUrl) {
+      await _appModel.uploadPhotoToFirebase(image).then((imageUrl) {
         if (imageOneUrl == null) {
           imageOneUrl = imageUrl;
         } else {
