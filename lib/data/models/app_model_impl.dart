@@ -91,4 +91,10 @@ class AppModelImpl extends AppModel {
     return wechatDataAgent.getLastMessageByChatId(
         chatId, getUserDataFromDatabase()?.id ?? "");
   }
+
+  @override
+  Stream<UserVO> getUserStreamFromFirestore() {
+    return wechatDataAgent
+        .getUserStreamFromFirestore(getUserDataFromDatabase()?.id ?? "");
+  }
 }

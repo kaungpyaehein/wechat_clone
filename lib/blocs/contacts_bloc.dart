@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:wechat_clone/data/models/app_model.dart';
 import 'package:wechat_clone/data/models/app_model_impl.dart';
@@ -14,13 +16,17 @@ class ContactsBloc extends ChangeNotifier {
 
   UserVO? userVo;
 
+  StreamSubscription? _userSteam;
   ContactsBloc() {
     _showLoading();
-    _appModel.getUserDataFromFirestore();
-    userVo = _appModel.getUserDataFromDatabase();
-    contacts = userVo?.contacts ?? [];
+    _appModel.getUserStreamFromFirestore().listen((user) {
+      userVo = user;
+      contacts = user.contacts ?? [];
+      _notifySafely();
+    });
+    // userVo = _appModel.getUserDataFromDatabase();
+    // contacts = userVo?.contacts ?? [];
     _hideLoading();
-    _notifySafely();
   }
 
   void _showLoading() {
@@ -41,6 +47,7 @@ class ContactsBloc extends ChangeNotifier {
 
   @override
   void dispose() {
+    _userSteam!.cancel();
     super.dispose();
     isDisposed = true;
   }

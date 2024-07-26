@@ -24,6 +24,7 @@ abstract class AppModel {
   Future<UserVO?> getUserDataFromFirestore();
 
   UserVO? getUserDataFromDatabase();
+
   void syncUserDataWithLocal(UserVO userVO);
 
   Future<void> sendMessage(MessageVO messageVO, String receiverId);
@@ -34,5 +35,5 @@ abstract class AppModel {
 
   Stream<MessageVO?> getLastMessageByChatId(
       String chatId,);
-
+  Stream<UserVO> getUserStreamFromFirestore();
 }

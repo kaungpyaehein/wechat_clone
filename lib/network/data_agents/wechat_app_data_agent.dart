@@ -38,4 +38,6 @@ abstract class WechatDataAgent {
 
   Stream<MessageVO?> getLastMessageByChatId(
       String chatId, String currentUserId);
+
+  Stream<UserVO> getUserStreamFromFirestore(String userId);
 }

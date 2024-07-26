@@ -163,54 +163,33 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
     }
   }
 
+  Stream<UserVO> getUserStreamFromFirestore(String userId) {
+    final userDocStream =
+        _firestore.collection(usersCollection).doc(userId).snapshots();
+    final contactDocsStream = _firestore
+        .collection(usersCollection)
+        .doc(userId)
+        .collection(contactCollection)
+        .snapshots();
+
+    return userDocStream.switchMap((userDocSnapshot) {
+      if (userDocSnapshot.exists) {
+        return contactDocsStream.map((contactQuerySnapshot) {
+          final List<UserVO> contacts = contactQuerySnapshot.docs
+              .map((contactDoc) => UserVO.fromJson(contactDoc.data()))
+              .toList();
+
+          return UserVO.fromJson(userDocSnapshot.data()!)
+              .copyWith(contacts: contacts);
+        });
+      } else {
+        return Stream.error(
+            "Error fetching user data: Document does not exist");
+      }
+    });
+  }
+
   @override
-  // Stream<List<MomentVO>> getMoments() {
-  //   return _firestore
-  //       .collection(momentCollection)
-  //       .snapshots()
-  //       .asyncExpand((querySnapshot) {
-  //     // Create a list of streams for each document's changes.
-  //     List<Stream<MomentVO>> documentStreams = querySnapshot.docs.map((doc) {
-  //       // Stream for the document itself
-  //       Stream<MomentVO> momentStream =
-  //           doc.reference.snapshots().map((documentSnapshot) {
-  //         MomentVO moment = MomentVO.fromJson(
-  //             documentSnapshot.data() as Map<String, dynamic>);
-  //         return moment;
-  //       });
-  //
-  //       // Stream for the comments collection
-  //       Stream<List<CommentVO>> commentsStream = doc.reference
-  //           .collection(commentCollection)
-  //           .snapshots()
-  //           .map((commentsSnapshot) => commentsSnapshot.docs
-  //               .map((subDoc) => CommentVO.fromJson(subDoc.data()))
-  //               .toList());
-  //
-  //       // Stream for the likes collection
-  //       Stream<List<String>> likesStream = doc.reference
-  //           .collection(likeCollection)
-  //           .snapshots()
-  //           .map((likesSnapshot) =>
-  //               likesSnapshot.docs.map((subDoc) => subDoc.id).toList());
-  //
-  //       // Combine the moment, comments, and likes streams
-  //       return Rx.combineLatest3(
-  //         momentStream,
-  //         commentsStream,
-  //         likesStream,
-  //         (MomentVO moment, List<CommentVO> comments, List<String> likes) {
-  //           moment.comments = comments;
-  //           moment.likes = likes;
-  //           return moment;
-  //         },
-  //       );
-  //     }).toList();
-  //
-  //     // Combine all document streams into one stream of lists of moments
-  //     return Rx.combineLatestList(documentStreams);
-  //   });
-  // }
   Stream<List<MomentVO>> getMoments() {
     return _firestore
         .collection(momentCollection)
