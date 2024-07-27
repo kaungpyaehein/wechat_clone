@@ -17,11 +17,10 @@ class LoginBloc extends ChangeNotifier {
     _showLoading();
     if (password.isNotEmpty && email.isNotEmpty) {
       return _model.login(email, password).whenComplete(() => _hideLoading());
-    }else{
+    } else {
       _hideLoading();
       return Future.error("Please check email & password!");
     }
-
   }
 
   void onEmailChanged(String email) {

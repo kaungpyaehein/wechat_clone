@@ -7,6 +7,9 @@ import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/extensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
 import 'package:wechat_clone/utils/images.dart';
+import 'package:wechat_clone/widgets/custom_back_button.dart';
+import 'package:wechat_clone/widgets/custom_text_field_widget.dart';
+import 'package:wechat_clone/widgets/loading_view.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -17,131 +20,154 @@ class LoginPage extends StatelessWidget {
       create: (context) => LoginBloc(),
       child: Builder(builder: (context) {
         final bloc = context.read<LoginBloc>();
-        return Scaffold(
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            leading: const CustomBackButton(),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kMarginXLarge2),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: kMarginLarge,
+        return Selector<LoginBloc, bool>(
+          selector: (context, bloc) => bloc.isLoading,
+          builder: (context, isLoading, child) {
+            return Stack(
+              children: [
+                Scaffold(
+                  appBar: AppBar(
+                    automaticallyImplyLeading: false,
+                    leading: const CustomBackButton(),
                   ),
+                  body: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: kMarginXLarge2),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: kMarginLarge,
+                          ),
 
-                  /// TITLE TEXT VIEW
-                  const Text(
-                    "Welcome !",
-                    style: TextStyle(
-                      color: kPrimaryColor,
-                      fontFamily: kYorkieDemo,
-                      fontSize: kText30,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: kMargin5,
-                  ),
-                  const Text(
-                    "Login to continue",
-                    style: TextStyle(
-                      color: kPrimaryColor,
-                      fontSize: kTextRegular2X,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+                          /// TITLE TEXT VIEW
+                          const Text(
+                            "Welcome !",
+                            style: TextStyle(
+                              color: kPrimaryColor,
+                              fontFamily: kYorkieDemo,
+                              fontSize: kText30,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: kMargin5,
+                          ),
+                          const Text(
+                            "Login to continue",
+                            style: TextStyle(
+                              color: kPrimaryColor,
+                              fontSize: kTextRegular2X,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
 
-                  const SizedBox(
-                    height: kMarginXLarge,
-                  ),
+                          const SizedBox(
+                            height: kMarginXLarge,
+                          ),
 
-                  /// IMAGE VIEW
-                  Image.asset(
-                    kLoginImage,
-                  ),
+                          /// IMAGE VIEW
+                          Image.asset(
+                            kLoginImage,
+                          ),
 
-                  const SizedBox(
-                    height: kMarginXLarge,
-                  ),
+                          const SizedBox(
+                            height: kMarginXLarge,
+                          ),
 
-                  /// LOGIN FORM VIEW
-                  CustomTextFieldWidget(
-                    onChanged: (phone) {
-                      bloc.onChangePhone(phone);
-                    },
-                    labelText: "Enter Your Phone Number",
-                  ),
+                          /// LOGIN FORM VIEW
+                          CustomTextFieldWidget(
+                            onChanged: (phone) {
+                              bloc.onChangePhone(phone);
+                            },
+                            inputType: TextInputType.phone,
+                            maxLength: 11,
+                            labelText: "Enter Your Phone Number",
+                          ),
 
-                  const SizedBox(
-                    height: kMarginMedium3,
-                  ),
+                          const SizedBox(
+                            height: kMarginMedium3,
+                          ),
 
-                  CustomTextFieldWidget(
-                    onChanged: (email) {
-                      bloc.onEmailChanged(email);
-                    },
-                    labelText: "Enter Your Email",
-                  ),
+                          CustomTextFieldWidget(
+                            onChanged: (email) {
+                              bloc.onEmailChanged(email);
+                            },
+                            labelText: "Enter Your Email",
+                          ),
 
-                  const SizedBox(
-                    height: kMarginMedium3,
-                  ),
+                          const SizedBox(
+                            height: kMarginMedium3,
+                          ),
 
-                  CustomTextFieldWidget(
-                    onChanged: (password) {
-                      bloc.onPasswordChanged(password);
-                    },
-                    isPasswordField: true,
-                    labelText: "Enter Your Password",
-                  ),
+                          CustomTextFieldWidget(
+                            onChanged: (password) {
+                              bloc.onPasswordChanged(password);
+                            },
+                            isPasswordField: true,
+                            labelText: "Enter Your Password",
+                          ),
 
-                  const SizedBox(
-                    height: kMarginMedium4,
-                  ),
+                          const SizedBox(
+                            height: kMarginMedium4,
+                          ),
 
-                  const Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "Forgot Password?",
-                      style: TextStyle(
-                        color: kDefaultTextColor,
-                        fontWeight: FontWeight.w500,
+                          const Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              "Forgot Password?",
+                              style: TextStyle(
+                                color: kDefaultTextColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(
+                            height: kMarginXLarge,
+                          ),
+
+                          /// LOGIN BUTTON
+                          /// PRIMARY BUTTON
+                          Center(
+                            child: PrimaryButtonWidget(
+                              onTap: () {
+                                bloc
+                                    .onTapLogin()
+                                    .then((value) =>
+                                    Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                              context) => const HomePage(),
+                                        ),
+                                            (route) => false))
+                                    .catchError((error) {
+                                  showErrorSnackBarWithMessage(
+                                      context, error.toString());
+                                });
+                              },
+                              label: "Login",
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-
-                  const SizedBox(
-                    height: kMarginXLarge,
-                  ),
-
-                  /// LOGIN BUTTON
-                  /// PRIMARY BUTTON
-                  Center(
-                    child: PrimaryButtonWidget(
-                      onTap: () {
-                        bloc
-                            .onTapLogin()
-                            .then((value) => Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const HomePage(),
-                                ),
-                                (route) => false))
-                            .catchError((error) {
-                          showErrorSnackBarWithMessage(
-                              context, error.toString());
-                        });
-                      },
-                      label: "Login",
+                ),
+                Visibility(
+                  visible: isLoading,
+                  child: Container(
+                    color: Colors.black12,
+                    child: const Center(
+                      child: LoadingView(),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
+                )
+              ],
+            );
+          },
         );
       }),
     );
@@ -200,62 +226,5 @@ class PrimaryButtonWidget extends StatelessWidget {
   }
 }
 
-class CustomTextFieldWidget extends StatelessWidget {
-  const CustomTextFieldWidget({
-    super.key,
-    required this.labelText,
-    this.isPasswordField,
-    required this.onChanged,
-    this.inputType, this.isAutoFocus,
-  });
 
-  final String labelText;
-  final bool? isPasswordField;
-  final void Function(String) onChanged;
-  final TextInputType? inputType;
-  final bool? isAutoFocus;
 
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      onChanged: onChanged,
-      keyboardType: inputType,
-      obscureText: isPasswordField ?? false,
-      autofocus: isAutoFocus ?? false,
-      style: const TextStyle(
-          color: kDefaultTextColor,
-          fontSize: kTextRegular2X,
-          fontFamily: kYorkieDemo),
-      decoration: InputDecoration(
-          focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: kDefaultTextColor, width: 1),
-          ),
-          enabledBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: kDefaultTextColor, width: 1),
-          ),
-          alignLabelWithHint: true,
-          labelText: labelText,
-          labelStyle:
-              const TextStyle(fontSize: kTextSmall, color: kGreyTextColor),
-          floatingLabelStyle:
-              const TextStyle(fontSize: kTextSmall, color: kGreyTextColor)),
-    );
-  }
-}
-
-class CustomBackButton extends StatelessWidget {
-  const CustomBackButton({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return BackButton(
-      style: ButtonStyle(
-          iconSize:
-              MaterialStateProperty.resolveWith((states) => kBackArrowIconSize),
-          foregroundColor:
-              MaterialStateProperty.resolveWith((states) => kPrimaryColor)),
-    );
-  }
-}

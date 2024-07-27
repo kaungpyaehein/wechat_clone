@@ -3,15 +3,16 @@ import 'package:datepicker_dropdown/order_format.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_clone/blocs/register_bloc_two.dart';
-import 'package:wechat_clone/data/vos/user_vo.dart';
 import 'package:wechat_clone/pages/auth/login_page.dart';
 import 'package:wechat_clone/pages/auth/upload_profile_page.dart';
-import 'package:wechat_clone/pages/home/home_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/extensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
 import 'package:wechat_clone/utils/strings.dart';
+import 'package:wechat_clone/widgets/custom_back_button.dart';
+import 'package:wechat_clone/widgets/custom_text_field_widget.dart';
+import 'package:wechat_clone/widgets/loading_view.dart';
 
 class SignUpPageTwo extends StatelessWidget {
   const SignUpPageTwo({super.key, required this.phoneNumber});
@@ -23,133 +24,154 @@ class SignUpPageTwo extends StatelessWidget {
       create: (context) => RegisterBlocTwo(phoneNumber),
       child: Builder(builder: (context) {
         final bloc = context.read<RegisterBlocTwo>();
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            leading: const CustomBackButton(),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kMarginXLarge2),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: kMarginLarge,
+        return Selector<RegisterBlocTwo, bool>(
+          selector: (context, bloc) => bloc.isLoading,
+          builder: (context, isLoading, child) {
+            return Stack(
+              children: [
+                Scaffold(
+                  backgroundColor: Colors.white,
+                  appBar: AppBar(
+                    automaticallyImplyLeading: false,
+                    leading: const CustomBackButton(),
                   ),
+                  body: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: kMarginXLarge2),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: kMarginLarge,
+                          ),
 
-                  /// TITLE TEXT VIEW
-                  const Text(
-                    "Hi !",
-                    style: TextStyle(
-                      color: kPrimaryColor,
-                      fontFamily: kYorkieDemo,
-                      fontSize: kText30,
-                      fontWeight: FontWeight.w700,
+                          /// TITLE TEXT VIEW
+                          const Text(
+                            "Hi !",
+                            style: TextStyle(
+                              color: kPrimaryColor,
+                              fontFamily: kYorkieDemo,
+                              fontSize: kText30,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: kMargin5,
+                          ),
+                          const Text(
+                            "Create a new account",
+                            style: TextStyle(
+                              color: kPrimaryColor,
+                              fontSize: kTextRegular2X,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+
+                          const SizedBox(
+                            height: kMarginLarge,
+                          ),
+
+                          CustomTextFieldWidget(
+                              labelText: "Name",
+                              onChanged: (text) {
+                                bloc.onChangeName(text);
+                              }),
+
+                          const SizedBox(
+                            height: kMarginLarge,
+                          ),
+                          const Text(
+                            "Date of Birth",
+                            style: TextStyle(
+                                fontSize: kTextSmall, color: kGreyTextColor),
+                          ),
+
+                          const SizedBox(
+                            height: kMarginMedium,
+                          ),
+
+                          DOBView(bloc: bloc),
+
+                          const SizedBox(
+                            height: kMarginLarge,
+                          ),
+                          const Text(
+                            "Gender",
+                            style: TextStyle(
+                                fontSize: kTextSmall, color: kGreyTextColor),
+                          ),
+
+                          const SizedBox(
+                            height: kMarginMedium,
+                          ),
+
+                          /// SELECT GENDER VIEW
+                          const GenderSelectView(),
+
+                          const SizedBox(
+                            height: kMarginLarge,
+                          ),
+                          CustomTextFieldWidget(
+                              labelText: "Email",
+                              onChanged: (text) {
+                                bloc.onChangeEmail(text);
+                              }),
+
+                          const SizedBox(
+                            height: kMarginLarge,
+                          ),
+                          CustomTextFieldWidget(
+                              labelText: "Password",
+                              onChanged: (text) {
+                                bloc.onChangePassword(text);
+                              }),
+
+                          const SizedBox(
+                            height: kMargin50,
+                          ),
+
+                          const _TermsAndConditionView(),
+
+                          const SizedBox(
+                            height: 70,
+                          ),
+
+                          Center(
+                              child: PrimaryButtonWidget(
+                                  onTap: () {
+                                    bloc
+                                        .onTapSignUp()
+                                        .then((value) =>
+                                            Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const UploadProfilePage(),
+                                                ),
+                                                (route) => false))
+                                        .catchError((error, _) =>
+                                            showErrorSnackBarWithMessage(
+                                                context, error.toString()));
+                                  },
+                                  label: "Sign Up"))
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(
-                    height: kMargin5,
-                  ),
-                  const Text(
-                    "Create a new account",
-                    style: TextStyle(
-                      color: kPrimaryColor,
-                      fontSize: kTextRegular2X,
-                      fontWeight: FontWeight.w400,
+                ),
+                Visibility(
+                  visible: isLoading,
+                  child: Container(
+                    color: Colors.black12,
+                    child: const Center(
+                      child: LoadingView(),
                     ),
                   ),
-
-                  const SizedBox(
-                    height: kMarginLarge,
-                  ),
-
-                  CustomTextFieldWidget(
-                      labelText: "Name",
-                      onChanged: (text) {
-                        bloc.onChangeName(text);
-                      }),
-
-                  const SizedBox(
-                    height: kMarginLarge,
-                  ),
-                  const Text(
-                    "Date of Birth",
-                    style:
-                        TextStyle(fontSize: kTextSmall, color: kGreyTextColor),
-                  ),
-
-                  const SizedBox(
-                    height: kMarginMedium,
-                  ),
-
-                  DOBView(bloc: bloc),
-
-                  const SizedBox(
-                    height: kMarginLarge,
-                  ),
-                  const Text(
-                    "Gender",
-                    style:
-                        TextStyle(fontSize: kTextSmall, color: kGreyTextColor),
-                  ),
-
-                  const SizedBox(
-                    height: kMarginMedium,
-                  ),
-
-                  /// SELECT GENDER VIEW
-                  const GenderSelectView(),
-
-                  const SizedBox(
-                    height: kMarginLarge,
-                  ),
-                  CustomTextFieldWidget(
-                      labelText: "Email",
-                      onChanged: (text) {
-                        bloc.onChangeEmail(text);
-                      }),
-
-                  const SizedBox(
-                    height: kMarginLarge,
-                  ),
-                  CustomTextFieldWidget(
-                      labelText: "Password",
-                      onChanged: (text) {
-                        bloc.onChangePassword(text);
-                      }),
-
-                  const SizedBox(
-                    height: kMargin50,
-                  ),
-
-                  const _TermsAndConditionView(),
-
-                  const SizedBox(
-                    height: 70,
-                  ),
-
-                  Center(
-                      child: PrimaryButtonWidget(
-                          onTap: () {
-                            bloc
-                                .onTapSignUp()
-                                .then((value) => Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => UploadProfilePage(),
-                                    ),
-                                    (route) => false))
-                                .catchError((error, _) =>
-                                    showSnackBarWithMessage(
-                                        context, error.toString()));
-                          },
-                          label: "Sign Up"))
-                ],
-              ),
-            ),
-          ),
+                )
+              ],
+            );
+          },
         );
       }),
     );

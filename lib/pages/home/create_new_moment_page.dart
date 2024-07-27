@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_clone/blocs/create_moment_bloc.dart';
 import 'package:wechat_clone/pages/auth/login_page.dart';
+import 'package:wechat_clone/pages/home/chat_details_page.dart';
 import 'package:wechat_clone/pages/home/home_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/extensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
 import 'package:wechat_clone/utils/images.dart';
+import 'package:wechat_clone/utils/route_extensions.dart';
+import 'package:wechat_clone/widgets/loading_view.dart';
 import 'package:wechat_clone/widgets/svg_widget.dart';
 
 class CreateNewMomentPage extends StatelessWidget {
@@ -21,128 +24,152 @@ class CreateNewMomentPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => CreateMomentBloc(),
       child: Builder(builder: (context) {
-        return Scaffold(
-          appBar: _buildAppBar(context),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kMarginMedium2),
-            child: SingleChildScrollView(
-              child: Consumer<CreateMomentBloc>(
-                builder: (context, bloc, child) {
-                  return Column(
-                    children: [
-                      const SizedBox(
-                        height: kMarginMedium4,
-                      ),
-
-                      /// Profile
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(kMarginXLarge2),
-                            child: Image.network(
-                              bloc.userVO?.profileImage ?? "",
-                              height: kMargin50,
-                              width: kMargin50,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
-                                color: kGreyTextColor,
-                                height: kMarginXLarge2,
-                                width: kMarginXLarge2,
+        return Selector<CreateMomentBloc, bool>(
+          selector: (context, bloc) => bloc.isLoading,
+          builder: (context, isLoading, child) {
+            return Stack(
+              children: [
+                Scaffold(
+                  appBar: _buildAppBar(context),
+                  body: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: kMarginMedium2),
+                    child: SingleChildScrollView(
+                      child: Consumer<CreateMomentBloc>(
+                        builder: (context, bloc, child) {
+                          return Column(
+                            children: [
+                              const SizedBox(
+                                height: kMarginMedium4,
                               ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: kMarginMedium2,
-                          ),
-                          Text(
-                            bloc.userVO?.name ?? "",
-                            style: const TextStyle(
-                                color: kPrimaryColor,
-                                fontWeight: FontWeight.w700,
-                                fontSize: kText18),
-                          ),
-                        ],
-                      ),
 
-                      /// TextField
-                      TextField(
-                        onChanged: (text) => bloc.onChangText(text),
-                        style: const TextStyle(
-                            color: kPrimaryColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: kTextRegular2X),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          hintText: "What’s on your mind",
-                          hintStyle: TextStyle(
-                              color: kGreyTextColor,
-                              fontSize: kText18,
-                              fontWeight: FontWeight.normal),
-                        ),
-                        maxLines: 15,
-                      ),
-                      const SizedBox(
-                        height: kMarginMedium2,
-                      ),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          CreateMomentImageView(
-                            imageWidth: 108,
-                            imageHeight: 108,
-                            borderRadius: kMarginMedium4,
-                            imageFile:
-                                bloc.images.isNotEmpty ? bloc.images[0] : null,
-                          ),
-                          const SizedBox(
-                            width: kMarginMedium,
-                          ),
-                          CreateMomentImageView(
-                            imageWidth: 108,
-                            imageHeight: 108,
-                            borderRadius: kMarginMedium4,
-                            imageFile:
-                                bloc.images.length > 1 ? bloc.images[1] : null,
-                          ),
-                          const SizedBox(
-                            width: kMarginMedium,
-                          ),
-                          InkWell(
-                            borderRadius: BorderRadius.circular(kMarginMedium4),
-                            onTap: () {
-                              bloc.onChooseImages();
-                            },
-                            child: Container(
-                              width: 108,
-                              height: 108,
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(kMarginMedium4),
-                                border:
-                                    Border.all(color: kPrimaryColor, width: 2),
+                              /// Profile
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.circular(kMarginXLarge2),
+                                    child: Image.network(
+                                      bloc.userVO?.profileImage ?? "",
+                                      height: kMargin50,
+                                      width: kMargin50,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Container(
+                                        color: kGreyTextColor,
+                                        height: kMarginXLarge2,
+                                        width: kMarginXLarge2,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: kMarginMedium2,
+                                  ),
+                                  Text(
+                                    bloc.userVO?.name ?? "",
+                                    style: const TextStyle(
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: kText18),
+                                  ),
+                                ],
                               ),
-                              child: const Center(
-                                child: SvgImageWidget(
-                                  imagePath: kAddIconBig,
-                                  height: kMarginXLarge2,
-                                  width: kMarginXLarge2,
+
+                              /// TextField
+                              TextField(
+                                onChanged: (text) => bloc.onChangText(text),
+                                style: const TextStyle(
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: kTextRegular2X),
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  hintText: "What’s on your mind",
+                                  hintStyle: TextStyle(
+                                      color: kGreyTextColor,
+                                      fontSize: kText18,
+                                      fontWeight: FontWeight.normal),
                                 ),
+                                maxLines: 15,
                               ),
-                            ),
-                          )
-                        ],
+                              const SizedBox(
+                                height: kMarginMedium2,
+                              ),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  CreateMomentImageView(
+                                    imageWidth: 108,
+                                    imageHeight: 108,
+                                    borderRadius: kMarginMedium4,
+                                    imageFile: bloc.images.isNotEmpty
+                                        ? bloc.images[0]
+                                        : null,
+                                  ),
+                                  const SizedBox(
+                                    width: kMarginMedium,
+                                  ),
+                                  CreateMomentImageView(
+                                    imageWidth: 108,
+                                    imageHeight: 108,
+                                    borderRadius: kMarginMedium4,
+                                    imageFile: bloc.images.length > 1
+                                        ? bloc.images[1]
+                                        : null,
+                                  ),
+                                  const SizedBox(
+                                    width: kMarginMedium,
+                                  ),
+                                  InkWell(
+                                    borderRadius:
+                                        BorderRadius.circular(kMarginMedium4),
+                                    onTap: () {
+                                      bloc.onChooseImages();
+                                    },
+                                    child: Container(
+                                      width: 108,
+                                      height: 108,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                            kMarginMedium4),
+                                        border: Border.all(
+                                            color: kPrimaryColor, width: 2),
+                                      ),
+                                      child: const Center(
+                                        child: SvgImageWidget(
+                                          imagePath: kAddIconBig,
+                                          height: kMarginXLarge2,
+                                          width: kMarginXLarge2,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: isLoading,
+                  child: Container(
+                    color: Colors.black12,
+                    child: const Center(
+                      child: LoadingView(),
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
         );
       }),
     );
@@ -176,8 +203,12 @@ class CreateNewMomentPage extends StatelessWidget {
             onTap: () {
               final bloc = context.read<CreateMomentBloc>();
               bloc.onTapCreateMoment().then((value) {
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => HomePage(),),
-                        (route) => false);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(),
+                    ),
+                    (route) => false);
               }).catchError((error) {
                 showErrorSnackBarWithMessage(context, error);
               });
@@ -212,19 +243,25 @@ class MomentImageView extends StatelessWidget {
     if ((imageUrl?.isEmpty ?? false || imageUrl == null)) {
       return const SizedBox.shrink();
     } else {
-      return ClipRRect(
-          borderRadius: BorderRadius.circular(borderRadius ?? kMargin5),
-          child: CachedNetworkImage(
-            imageUrl: imageUrl!,
-            fit: boxFit ?? BoxFit.cover,
-            height: imageHeight ?? 200,
-            width: imageWidth ?? double.infinity,
-            errorWidget: (context, error, stackTrace) => Container(
-              color: kGreyTextColor,
-              height: 200,
-              width: double.infinity,
-            ),
-          ));
+      return GestureDetector(
+        onTap: (){
+          context.push(PhotoViewWidget(imageUrl: imageUrl ?? ""));
+
+        },
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(borderRadius ?? kMargin5),
+            child: CachedNetworkImage(
+              imageUrl: imageUrl!,
+              fit: boxFit ?? BoxFit.cover,
+              height: imageHeight ?? 200,
+              width: imageWidth ?? double.infinity,
+              errorWidget: (context, error, stackTrace) => Container(
+                color: kGreyTextColor,
+                height: 200,
+                width: double.infinity,
+              ),
+            )),
+      );
     }
   }
 }

@@ -75,19 +75,23 @@ class RegisterBlocTwo extends ChangeNotifier {
 
   Future onTapSignUp() {
     _showLoading();
-    final UserVO userVO = UserVO(
-        contacts: [
-        ],
-        name: name,
-        phone: phone,
-        password: password,
-        gender: gender,
-        email: email,
-        profileImage: "",
-        dob: "$day/$month/$year");
-    return authModel.register(userVO).whenComplete(
-          () => _hideLoading(),
-        );
+    if (isTnCChecked) {
+      final UserVO userVO = UserVO(
+          contacts: [],
+          name: name,
+          phone: phone,
+          password: password,
+          gender: gender,
+          email: email,
+          profileImage: "",
+          dob: "$day/$month/$year");
+      return authModel.register(userVO).whenComplete(
+            () => _hideLoading(),
+          );
+    }else{
+      _hideLoading();
+    return  Future.error("Please check data!");
+    }
   }
 
   void _showLoading() {

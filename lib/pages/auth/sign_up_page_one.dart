@@ -9,6 +9,8 @@ import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/extensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
 import 'package:wechat_clone/utils/images.dart';
+import 'package:wechat_clone/widgets/custom_back_button.dart';
+import 'package:wechat_clone/widgets/custom_text_field_widget.dart';
 
 class SignupPageOne extends StatelessWidget {
   const SignupPageOne({super.key});
@@ -138,11 +140,11 @@ class PhoneNumberInputView extends StatelessWidget {
       children: [
         Expanded(
           child: CustomTextFieldWidget(
+            maxLength: 11,
               inputType: TextInputType.phone,
               labelText: "Enter Your Phone Number",
               onChanged: (text) {
                 final bloc = context.read<RegisterBlocOne>();
-
                 bloc.onChangePhoneNumber(text);
               }),
         ),

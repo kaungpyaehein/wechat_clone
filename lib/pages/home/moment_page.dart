@@ -1,15 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_clone/blocs/moment_feeds_bloc.dart';
 import 'package:wechat_clone/data/vos/comment_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/pages/auth/login_page.dart';
+import 'package:wechat_clone/pages/home/chat_details_page.dart';
 import 'package:wechat_clone/pages/home/create_new_moment_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/extensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
 import 'package:wechat_clone/utils/images.dart';
+import 'package:wechat_clone/utils/route_extensions.dart';
+import 'package:wechat_clone/widgets/custom_text_field_widget.dart';
 import 'package:wechat_clone/widgets/svg_widget.dart';
 
 class MomentPage extends StatelessWidget {

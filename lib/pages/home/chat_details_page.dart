@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_clone/blocs/chat_details_bloc.dart';
-import 'package:wechat_clone/data/models/app_model_impl.dart';
 import 'package:wechat_clone/data/vos/message_vo.dart';
-import 'package:wechat_clone/network/data_agents/cloud_firestore_data_agent_impl.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/route_extensions.dart';
@@ -76,14 +74,12 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
               StreamBuilder(
                   stream: bloc.getMessagesStream(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
                     }
-                    if (snapshot.connectionState !=
-                            ConnectionState.waiting &&
+                    if (snapshot.connectionState != ConnectionState.waiting &&
                         snapshot.data != null) {
                       final List<MessageVO> messages = snapshot.data ?? [];
                       return ListView.builder(
@@ -273,15 +269,21 @@ class PhotoViewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PhotoView(
-      imageProvider: CachedNetworkImageProvider(
-        imageUrl,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        automaticallyImplyLeading: true,
       ),
-      errorBuilder: (context, error, stackTrace) => Container(
-        color: kGreyTextColor,
-      ),
-      loadingBuilder: (context, event) => Container(
-        color: kGreyTextColor,
+      body: PhotoView(
+        imageProvider: CachedNetworkImageProvider(
+          imageUrl,
+        ),
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: kGreyTextColor,
+        ),
+        loadingBuilder: (context, event) => Container(
+          color: kGreyTextColor,
+        ),
       ),
     );
   }
