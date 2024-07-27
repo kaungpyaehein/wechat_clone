@@ -163,6 +163,7 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
     }
   }
 
+  @override
   Stream<UserVO> getUserStreamFromFirestore(String userId) {
     final userDocStream =
         _firestore.collection(usersCollection).doc(userId).snapshots();
@@ -213,7 +214,6 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
             .snapshots()
             .map((commentsSnapshot) {
           return commentsSnapshot.docs.map((subDoc) {
-            print('Comment found: ${subDoc.data()}');
             return CommentVO.fromJson(subDoc.data());
           }).toList();
         });
@@ -223,9 +223,7 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
             .collection(likeCollection)
             .snapshots()
             .map((likesSnapshot) {
-          print('Likes snapshot updated for document: ${doc.id}');
           return likesSnapshot.docs.map((subDoc) {
-            print('Like found: ${subDoc.id}');
             return subDoc.id;
           }).toList();
         });
@@ -250,36 +248,10 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
 
       // Combine all document streams into one stream of lists of moments
       return Rx.combineLatestList<MomentVO>(documentStreams).map((moments) {
-        print('Moments list updated: $moments');
         return moments;
       });
     });
   }
-  // Stream<List<MomentVO>> getMoments() async* {
-  //   // Listen to the collection snapshot.
-  //   await for (var querySnapshot in _firestore.collection(momentCollection).snapshots()) {
-  //     // List of Futures for each document.
-  //     List<Future<MomentVO>> momentFutures = querySnapshot.docs.map((doc) async {
-  //       // Get the moment document data.
-  //       var documentSnapshot = await doc.reference.get();
-  //       MomentVO moment = MomentVO.fromJson(documentSnapshot.data() as Map<String, dynamic>);
-  //
-  //       // Get the comments for the moment.
-  //       var commentsSnapshot = await doc.reference.collection(commentCollection).get();
-  //       moment.comments = commentsSnapshot.docs.map((subDoc) => CommentVO.fromJson(subDoc.data())).toList();
-  //
-  //       // Get the likes for the moment.
-  //       var likesSnapshot = await doc.reference.collection(likeCollection).get();
-  //       moment.likes = likesSnapshot.docs.map((subDoc) => subDoc.id).toList();
-  //
-  //       return moment;
-  //     }).toList();
-  //
-  //     // Wait for all moment futures to complete.
-  //     List<MomentVO> moments = await Future.wait(momentFutures);
-  //     yield moments;
-  //   }
-  // }
 
   @override
   Future<void> createNewMoment(MomentVO momentVO) async {
@@ -462,5 +434,14 @@ class CloudFirestoreDataAgentImpl extends WechatDataAgent {
     }).handleError((error) {
       return null;
     });
+  }
+
+  @override
+  Future<void> updateInfo(UserVO userVO) {
+
+    return _firestore
+        .collection(usersCollection)
+        .doc(userVO.id.toString())
+        .set(userVO.copyWith(contacts: []).toJson());
   }
 }

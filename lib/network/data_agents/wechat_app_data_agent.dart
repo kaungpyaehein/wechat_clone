@@ -40,4 +40,7 @@ abstract class WechatDataAgent {
       String chatId, String currentUserId);
 
   Stream<UserVO> getUserStreamFromFirestore(String userId);
+
+  Future<void> updateInfo(UserVO userVO);
+
 }

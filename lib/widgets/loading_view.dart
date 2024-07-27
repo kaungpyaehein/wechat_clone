@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 
 class LoadingView extends StatelessWidget {
@@ -16,8 +17,8 @@ class LoadingView extends StatelessWidget {
           width: kMarginXXLarge,
           height: kMarginXXLarge,
           child: LoadingIndicator(
-            indicatorType: Indicator.audioEqualizer,
-            colors: [Colors.white],
+            indicatorType: Indicator.orbit,
+            colors: [kPrimaryColor],
             strokeWidth: 2,
             backgroundColor: Colors.transparent,
             pathBackgroundColor: Colors.black,

@@ -10,6 +10,7 @@ import 'package:wechat_clone/pages/home/qr_scanner_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/images.dart';
+import 'package:wechat_clone/widgets/loading_view.dart';
 
 class ContactsPage extends StatelessWidget {
   const ContactsPage({super.key});
@@ -18,37 +19,55 @@ class ContactsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ContactsBloc(),
-      child: Scaffold(
-        appBar: buildDefaultAppBar(
-            context: context,
-            title: "Contacts",
-            iconPath: kAddContactIcon,
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const QRScannerPage()));
-            }),
-        body: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: kMarginMedium3),
-          child: Column(
+      child: Selector<ContactsBloc, bool>(
+        selector: (context, bloc) => bloc.isLoading,
+        builder: (context, isLoading, child) {
+          return Stack(
             children: [
-              SizedBox(
-                height: kMarginMedium,
+              Scaffold(
+                appBar: buildDefaultAppBar(
+                    context: context,
+                    title: "Contacts",
+                    iconPath: kAddContactIcon,
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const QRScannerPage()));
+                    }),
+                body: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: kMarginMedium3),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: kMarginMedium,
+                      ),
+
+                      /// Search Bar
+                      SearchFieldView(),
+
+                      SizedBox(
+                        height: kMarginMedium3,
+                      ),
+
+                      /// Contact List
+                      Expanded(child: ContactListView())
+                    ],
+                  ),
+                ),
               ),
-
-              /// Search Bar
-              SearchFieldView(),
-
-              SizedBox(
-                height: kMarginMedium3,
-              ),
-
-              /// Contact List
-              Expanded(child: ContactListView())
+              Visibility(
+                visible: isLoading,
+                child: Container(
+                  color: Colors.black12,
+                  child: const Center(
+                    child: LoadingView(),
+                  ),
+                ),
+              )
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }

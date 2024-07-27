@@ -1,19 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_clone/blocs/moment_feeds_bloc.dart';
 import 'package:wechat_clone/data/vos/comment_vo.dart';
 import 'package:wechat_clone/data/vos/moment_vo.dart';
 import 'package:wechat_clone/pages/auth/login_page.dart';
-import 'package:wechat_clone/pages/home/chat_details_page.dart';
 import 'package:wechat_clone/pages/home/create_new_moment_page.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/extensions.dart';
 import 'package:wechat_clone/utils/fonts.dart';
 import 'package:wechat_clone/utils/images.dart';
-import 'package:wechat_clone/utils/route_extensions.dart';
 import 'package:wechat_clone/widgets/custom_text_field_widget.dart';
+import 'package:wechat_clone/widgets/loading_view.dart';
 import 'package:wechat_clone/widgets/svg_widget.dart';
 
 class MomentPage extends StatelessWidget {
@@ -23,21 +21,39 @@ class MomentPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => MomentFeedsBloc(),
-      child: Scaffold(
-        backgroundColor: kScaffoldBackgroundColor,
-        appBar: buildDefaultAppBar(
-          context: context,
-          title: "Moments",
-          iconPath: kAddIconAppBar,
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CreateNewMomentPage(),
-                ));
-          },
-        ),
-        body: const MomentListView(),
+      child: Selector<MomentFeedsBloc, bool>(
+        selector: (context, bloc) => bloc.isLoading,
+        builder: (context, isLoading, child) {
+          return Stack(
+            children: [
+              Scaffold(
+                backgroundColor: kScaffoldBackgroundColor,
+                appBar: buildDefaultAppBar(
+                  context: context,
+                  title: "Moments",
+                  iconPath: kAddIconAppBar,
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CreateNewMomentPage(),
+                        ));
+                  },
+                ),
+                body: const MomentListView(),
+              ),
+              Visibility(
+                visible: isLoading,
+                child: Container(
+                  color: Colors.black12,
+                  child: const Center(
+                    child: LoadingView(),
+                  ),
+                ),
+              )
+            ],
+          );
+        },
       ),
     );
   }

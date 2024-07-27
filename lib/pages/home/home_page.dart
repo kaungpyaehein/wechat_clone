@@ -11,7 +11,8 @@ import 'package:wechat_clone/utils/fonts.dart';
 import 'package:wechat_clone/utils/images.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({this.selectedIndex = 0, super.key});
+  final int selectedIndex;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -26,6 +27,13 @@ class _HomePageState extends State<HomePage> {
     const ProfilePage(),
     const SettingsPage(),
   ];
+
+  @override
+  void initState() {
+    selectedIndex = widget.selectedIndex;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     CloudFirestoreDataAgentImpl().getMoments().first.then((value) {

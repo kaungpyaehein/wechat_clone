@@ -9,6 +9,7 @@ import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/images.dart';
 import 'package:wechat_clone/utils/route_extensions.dart';
+import 'package:wechat_clone/widgets/loading_view.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -18,29 +19,49 @@ class ChatPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => ChatListBloc(),
       child: Builder(builder: (context) {
-        return Scaffold(
-          appBar: buildDefaultAppBar(
-              context: context,
-              title: "Chats",
-              iconPath: kSearchIcon,
-              onTap: () {}),
-          body: Selector<ChatListBloc, List<UserVO>>(
-            selector: (context, bloc) => bloc.activeChatList,
-            builder: (context, activeChatList, child) {
-              return ListView.separated(
-                separatorBuilder: (context, index) => const SizedBox(
-                  height: kMarginMedium2,
+        return Selector<ChatListBloc, bool>(
+          selector: (context, bloc) => bloc.isLoading,
+          builder: (context, isLoading, _) {
+            return Stack(
+              children: [
+                Scaffold(
+                  appBar: buildDefaultAppBar(
+                      context: context,
+                      title: "Chats",
+                      iconPath: kSearchIcon,
+                      onTap: () {}),
+                  body: Selector<ChatListBloc, List<UserVO>>(
+                    selector: (context, bloc) => bloc.activeChatList,
+                    builder: (context, activeChatList, child) {
+                      return ListView.separated(
+                        separatorBuilder: (context, index) => const SizedBox(
+                          height: kMarginMedium2,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: kMarginMedium3,
+                            vertical: kMarginMedium3),
+                        itemCount: activeChatList.length,
+                        itemBuilder: (context, index) {
+                          return ChatListItemView(
+                            userVO: activeChatList[index],
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: kMarginMedium3),
-                itemCount: activeChatList.length,
-                itemBuilder: (context, index) {
-                  return ChatListItemView(
-                    userVO: activeChatList[index],
-                  );
-                },
-              );
-            },
-          ),
+                Visibility(
+                  visible: isLoading,
+                  child: Container(
+                    color: Colors.black12,
+                    child: const Center(
+                      child: LoadingView(),
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
         );
       }),
     );

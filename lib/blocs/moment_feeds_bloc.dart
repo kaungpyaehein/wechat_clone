@@ -24,10 +24,12 @@ class MomentFeedsBloc extends ChangeNotifier {
   UserVO? currentUser;
 
   MomentFeedsBloc() {
+    _showLoading();
     currentUser = _authModelImpl.getUserDataFromDatabase();
     _momentsSubscription = _appModel.getMomentsFromNetwork().listen((moments) {
       this.moments = moments;
       _notifySafely();
+      _hideLoading();
     });
   }
 

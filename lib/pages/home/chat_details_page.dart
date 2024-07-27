@@ -8,6 +8,7 @@ import 'package:wechat_clone/data/vos/message_vo.dart';
 import 'package:wechat_clone/utils/colors.dart';
 import 'package:wechat_clone/utils/dimensions.dart';
 import 'package:wechat_clone/utils/route_extensions.dart';
+import 'package:wechat_clone/widgets/loading_view.dart';
 
 import '../../data/vos/user_vo.dart';
 
@@ -76,7 +77,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
-                        child: CircularProgressIndicator(),
+                        child: LoadingView(),
                       );
                     }
                     if (snapshot.connectionState != ConnectionState.waiting &&

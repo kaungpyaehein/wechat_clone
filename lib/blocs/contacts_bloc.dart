@@ -19,7 +19,7 @@ class ContactsBloc extends ChangeNotifier {
   StreamSubscription? _userSteam;
   ContactsBloc() {
     _showLoading();
-    _appModel.getUserStreamFromFirestore().listen((user) {
+    _userSteam = _appModel.getUserStreamFromFirestore().listen((user) {
       userVo = user;
       contacts = user.contacts ?? [];
       _notifySafely();

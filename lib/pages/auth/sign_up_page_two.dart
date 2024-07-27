@@ -91,7 +91,17 @@ class SignUpPageTwo extends StatelessWidget {
                             height: kMarginMedium,
                           ),
 
-                          DOBView(bloc: bloc),
+                          DOBView(
+                            onChangeDay: (text) {
+                              bloc.onChangeDay(text ?? "");
+                            },
+                            onChangeMonth: (text) {
+                              bloc.onChangeMonth(text ?? "");
+                            },
+                            onChangeYear: (text) {
+                              bloc.onChangeYear(text ?? "");
+                            },
+                          ),
 
                           const SizedBox(
                             height: kMarginLarge,
@@ -107,7 +117,17 @@ class SignUpPageTwo extends StatelessWidget {
                           ),
 
                           /// SELECT GENDER VIEW
-                          const GenderSelectView(),
+                          Selector<RegisterBlocTwo, String?>(
+                            selector: (context, bloc) => bloc.gender,
+                            builder: (context, gender, child) {
+                              return GenderSelectView(
+                                gender: gender ?? "",
+                                onChangeGender: (value) {
+                                  bloc.onChangeGender(value);
+                                },
+                              );
+                            },
+                          ),
 
                           const SizedBox(
                             height: kMarginLarge,
@@ -181,14 +201,26 @@ class SignUpPageTwo extends StatelessWidget {
 class DOBView extends StatelessWidget {
   const DOBView({
     super.key,
-    required this.bloc,
+    required this.onChangeDay,
+    required this.onChangeMonth,
+    required this.onChangeYear,
+    this.selectedDay,
+    this.selectedMonth,
+    this.selectedYear,
   });
 
-  final RegisterBlocTwo bloc;
-
+  final void Function(String?) onChangeDay;
+  final void Function(String?) onChangeMonth;
+  final void Function(String?) onChangeYear;
+  final String? selectedDay;
+  final String? selectedMonth;
+  final String? selectedYear;
   @override
   Widget build(BuildContext context) {
     return DropdownDatePicker(
+      hintDay: selectedDay ?? "Day",
+      hintMonth: selectedMonth ?? "Month",
+      hintYear: selectedYear ?? "Year",
       icon: const Icon(
         Icons.arrow_drop_down,
         color: kDefaultTextColor,
@@ -206,13 +238,12 @@ class DOBView extends StatelessWidget {
       startYear: 1900, // optional
       endYear: 2020, // optional
       width: 10,
-      dayFlex: 2, // optional
-      monthFlex: 3,
-      yearFlex: 2,
-
-      onChangedDay: (value) => bloc.onChangeDay(value ?? ""),
-      onChangedMonth: (value) => bloc.onChangeMonth(value ?? ""),
-      onChangedYear: (value) => bloc.onChangeYear(value ?? ""),
+      dayFlex: 3, // optional
+      monthFlex: 5,
+      yearFlex: 4,
+      onChangedDay: (value) => onChangeDay(value),
+      onChangedMonth: (value) => onChangeMonth(value),
+      onChangedYear: (value) => onChangeYear(value),
 
       boxDecoration: const BoxDecoration(
         color: Colors.white,
@@ -237,62 +268,60 @@ class DOBView extends StatelessWidget {
 class GenderSelectView extends StatelessWidget {
   const GenderSelectView({
     super.key,
+    required this.onChangeGender,
+    required this.gender,
   });
 
+  final void Function(String) onChangeGender;
+  final String gender;
   @override
   Widget build(BuildContext context) {
-    return Selector<RegisterBlocTwo, String>(
-      selector: (context, bloc) => bloc.gender,
-      builder: (context, gender, child) {
-        final bloc = context.read<RegisterBlocTwo>();
-        return Row(
-          children: [
-            Radio(
-              activeColor: kPrimaryColor,
-              visualDensity: VisualDensity.compact,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              value: kGenderMale,
-              groupValue: gender,
-              onChanged: (value) {
-                if (value != null) {
-                  bloc.onChangeGender(value);
-                }
-              },
-            ),
-            const SizedBox(
-              width: kMarginMedium,
-            ),
-            const Text(
-              kGenderMale,
-              style: TextStyle(
-                  fontFamily: kYorkieDemo, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(
-              width: kMarginMedium4,
-            ),
-            Radio(
-              activeColor: kPrimaryColor,
-              visualDensity: VisualDensity.compact,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              value: kGenderFemale,
-              groupValue: gender,
-              onChanged: (value) {
-                if (value != null) {
-                  bloc.onChangeGender(value);
-                }
-              },
-            ),
-            const SizedBox(
-              width: kMarginMedium,
-            ),
-            const Text(
-              kGenderFemale,
-              style: TextStyle(
-                  fontFamily: kYorkieDemo, fontWeight: FontWeight.w500),
-            ),
-          ],
-        );
-      },
+    return Row(
+      children: [
+        Radio(
+          activeColor: kPrimaryColor,
+          visualDensity: VisualDensity.compact,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          value: kGenderMale,
+          groupValue: gender,
+          onChanged: (value) {
+            if (value != null) {
+              onChangeGender(value);
+            }
+          },
+        ),
+        const SizedBox(
+          width: kMarginMedium,
+        ),
+        const Text(
+          kGenderMale,
+          style:
+              TextStyle(fontFamily: kYorkieDemo, fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(
+          width: kMarginMedium4,
+        ),
+        Radio(
+          activeColor: kPrimaryColor,
+          visualDensity: VisualDensity.compact,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          value: kGenderFemale,
+          groupValue: gender,
+          onChanged: (value) {
+            if (value != null) {
+              onChangeGender(value);
+            }
+          },
+        ),
+        const SizedBox(
+          width: kMarginMedium,
+        ),
+        const Text(
+          kGenderFemale,
+          style:
+              TextStyle(fontFamily: kYorkieDemo, fontWeight: FontWeight.w500),
+        ),
+      ],
     );
   }
 }

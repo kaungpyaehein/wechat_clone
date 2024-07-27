@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:wechat_clone/data/models/app_model.dart';
 import 'package:wechat_clone/data/models/app_model_impl.dart';
-import 'package:wechat_clone/data/vos/message_vo.dart';
 import 'package:wechat_clone/data/vos/user_vo.dart';
 
 class ChatListBloc extends ChangeNotifier {
@@ -25,14 +24,15 @@ class ChatListBloc extends ChangeNotifier {
     _showLoading();
     userVo = _appModel.getUserDataFromDatabase();
     contacts = userVo?.contacts ?? [];
-    _appModel.getChatIdList().then((value) {
-      chatIdList = value;
-      _notifySafely();
-    }).whenComplete(() => filterActiveChatUsers());
-
     _notifySafely();
-
-    _hideLoading();
+    _appModel
+        .getChatIdList()
+        .then((value) {
+          chatIdList = value;
+          _notifySafely();
+        })
+        .whenComplete(() => filterActiveChatUsers())
+        .whenComplete(() => _hideLoading());
   }
 
   Stream getLatestMessageStreamByChatId(String chatId) {
@@ -42,6 +42,7 @@ class ChatListBloc extends ChangeNotifier {
   void filterActiveChatUsers() {
     activeChatList =
         contacts.where((contact) => chatIdList.contains(contact.id)).toList();
+    _hideLoading();
     _notifySafely();
   }
 
